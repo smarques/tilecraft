@@ -26,6 +26,79 @@ let currentMode = 'move';
 let isMouseDown = false;
 let isSelecting = true;
 
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSlideSound() {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    
+    const duration = 0.15;
+    const bufferSize = audioCtx.sampleRate * duration;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+    }
+    
+    const noiseSource = audioCtx.createBufferSource();
+    noiseSource.buffer = buffer;
+    
+    const bandpass = audioCtx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.value = 1800;
+    bandpass.Q.value = 2.0;
+
+    const lowpass = audioCtx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.value = 300;
+
+    const rumbleSource = audioCtx.createBufferSource();
+    rumbleSource.buffer = buffer;
+    rumbleSource.connect(lowpass);
+
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0.8, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    
+    noiseSource.connect(bandpass);
+    bandpass.connect(gainNode);
+    lowpass.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    noiseSource.start();
+    rumbleSource.start();
+}
+
+function playBlipSound(isSelected = true) {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    
+    const duration = 0.05;
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.type = 'triangle';
+    
+    if (isSelected) {
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + duration);
+    } else {
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + duration);
+    }
+
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+}
 window.addEventListener('mousedown', () => isMouseDown = true);
 window.addEventListener('mouseup', () => {
     isMouseDown = false;
@@ -78,6 +151,7 @@ function enforceSelectionRules(activeInner = null) {
         if (toDeselect.length > 0) {
             toDeselect.forEach(inner => inner.classList.remove('selected'));
             changed = true;
+            playBlipSound(false);
         }
     } while (changed);
 }
@@ -119,6 +193,7 @@ function initGame() {
                     e.preventDefault();
                     isSelecting = !inner.classList.contains('selected');
                     inner.classList.toggle('selected', isSelecting);
+                    playBlipSound(isSelecting);
                     enforceSelectionRules(inner);
                     updateSelectionState();
                 }
@@ -126,7 +201,11 @@ function initGame() {
             
             tile.addEventListener('mouseenter', (e) => {
                 if (currentMode === 'highlight' && isMouseDown) {
-                    inner.classList.toggle('selected', isSelecting);
+                    const wasSelected = inner.classList.contains('selected');
+                    if (wasSelected !== isSelecting) {
+                        inner.classList.toggle('selected', isSelecting);
+                        playBlipSound(isSelecting);
+                    }
                     enforceSelectionRules(inner);
                     updateSelectionState();
                 }
@@ -180,6 +259,7 @@ function handleTileClick(id) {
     
     if (isAdjacent(tileIndex, currEmptyIndex)) {
         isAnimating = true;
+        playSlideSound();
         
         // Swap indexes
         tileState.index = currEmptyIndex;
