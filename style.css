@@ -79,14 +79,16 @@ header p {
     pointer-events: none;
 }
 
-.moves-display, .score-display {
+.moves-display,
+.score-display {
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--text-primary);
     pointer-events: auto;
 }
 
-#moves-count, #score-count {
+#moves-count,
+#score-count {
     color: #c97a7e;
     /* A muted terracotta */
 }
@@ -190,6 +192,7 @@ button.active {
     /* Debossed/etched text effect for white text */
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 -1px 1px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(0, 0, 0, 0.05);
+    text-transform: lowercase;
 }
 
 .tile:not(.empty-tile):hover .tile-inner {
