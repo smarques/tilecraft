@@ -1,13 +1,13 @@
 // 63 Unique words for an 8x8 grid (the 64th is empty)
 const words = [
-    "Nebula", "Quantum", "Cosmos", "Aether", "Galaxy", "Pulsar", "Quasar", "Orbit",
-    "Zenith", "Nova", "Epoch", "Stellar", "Void", "Meteor", "Nexus", "Vertex",
-    "Luna", "Solar", "Astro", "Plasma", "Horizon", "Eclipse", "Comet", "Aura",
-    "Infinity", "Prism", "Echo", "Mirage", "Oasis", "Halo", "Spark", "Flux",
-    "Neon", "Cyber", "Synth", "Vortex", "Matrix", "Cipher", "Pixel", "Vector",
-    "Logic", "Node", "Data", "Byte", "Link", "Sync", "Grid", "Core",
-    "Glitch", "Pulse", "Wave", "Beam", "Ray", "Signal", "Code", "Flow",
-    "Alpha", "Omega", "Delta", "Sigma", "Rune", "Glyph", "Shift"
+    { text: "Nebula", category: "space" }, { text: "Quantum", category: "science" }, { text: "Cosmos", category: "space" }, { text: "Aether", category: "magic" }, { text: "Galaxy", category: "space" }, { text: "Pulsar", category: "space" }, { text: "Quasar", category: "space" }, { text: "Orbit", category: "space" },
+    { text: "Zenith", category: "abstract" }, { text: "Nova", category: "space" }, { text: "Epoch", category: "abstract" }, { text: "Stellar", category: "space" }, { text: "Void", category: "abstract" }, { text: "Meteor", category: "space" }, { text: "Nexus", category: "tech" }, { text: "Vertex", category: "abstract" },
+    { text: "Luna", category: "space" }, { text: "Solar", category: "space" }, { text: "Astro", category: "space" }, { text: "Plasma", category: "science" }, { text: "Horizon", category: "abstract" }, { text: "Eclipse", category: "space" }, { text: "Comet", category: "space" }, { text: "Aura", category: "magic" },
+    { text: "Infinity", category: "abstract" }, { text: "Prism", category: "science" }, { text: "Echo", category: "magic" }, { text: "Mirage", category: "magic" }, { text: "Oasis", category: "nature" }, { text: "Halo", category: "magic" }, { text: "Spark", category: "nature" }, { text: "Flux", category: "science" },
+    { text: "Neon", category: "tech" }, { text: "Cyber", category: "tech" }, { text: "Synth", category: "tech" }, { text: "Vortex", category: "magic" }, { text: "Matrix", category: "tech" }, { text: "Cipher", category: "tech" }, { text: "Pixel", category: "tech" }, { text: "Vector", category: "science" },
+    { text: "Logic", category: "tech" }, { text: "Node", category: "tech" }, { text: "Data", category: "tech" }, { text: "Byte", category: "tech" }, { text: "Link", category: "tech" }, { text: "Sync", category: "tech" }, { text: "Grid", category: "tech" }, { text: "Core", category: "tech" },
+    { text: "Glitch", category: "tech" }, { text: "Pulse", category: "science" }, { text: "Wave", category: "nature" }, { text: "Beam", category: "science" }, { text: "Ray", category: "science" }, { text: "Signal", category: "tech" }, { text: "Code", category: "tech" }, { text: "Flow", category: "nature" },
+    { text: "Alpha", category: "abstract" }, { text: "Omega", category: "abstract" }, { text: "Delta", category: "abstract" }, { text: "Sigma", category: "abstract" }, { text: "Rune", category: "magic" }, { text: "Glyph", category: "magic" }, { text: "Shift", category: "abstract" }
 ];
 
 const GRID_SIZE = 8;
@@ -40,7 +40,8 @@ function initGame() {
             tile.classList.add('empty-tile');
             // Store the empty tile object
         } else {
-            inner.textContent = words[i];
+            inner.textContent = words[i].text;
+            inner.setAttribute('data-category', words[i].category);
             tile.onclick = () => handleTileClick(i);
         }
         
