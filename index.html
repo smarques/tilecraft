@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="app-container">
         <div class="score-display">Moves: <span id="moves-count">0</span></div>
@@ -19,6 +21,9 @@
             <p>Slide the words to solve the cosmos</p>
             <div class="controls">
                 <button id="shuffle-btn">Shuffle</button>
+                <button id="mode-move" class="active">Move</button>
+                <button id="mode-highlight">Highlight</button>
+
             </div>
         </header>
 
@@ -28,7 +33,8 @@
             </div>
         </main>
     </div>
-    
+
     <script src="script.js"></script>
 </body>
+
 </html>

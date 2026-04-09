@@ -22,10 +22,32 @@ let state = []; // Array to store the current board state
 let emptyIndex = TOTAL_TILES - 1; // Index of the empty tile in the state array
 let movesCount = 0;
 let isAnimating = false;
+let currentMode = 'move';
+let isMouseDown = false;
+let isSelecting = true;
+
+window.addEventListener('mousedown', () => isMouseDown = true);
+window.addEventListener('mouseup', () => isMouseDown = false);
 
 const boardElement = document.getElementById('game-board');
 const movesElement = document.getElementById('moves-count');
 const shuffleBtn = document.getElementById('shuffle-btn');
+const modeMoveBtn = document.getElementById('mode-move');
+const modeHighlightBtn = document.getElementById('mode-highlight');
+
+modeMoveBtn.addEventListener('click', () => setMode('move'));
+modeHighlightBtn.addEventListener('click', () => setMode('highlight'));
+
+function setMode(mode) {
+    currentMode = mode;
+    modeMoveBtn.classList.toggle('active', mode === 'move');
+    modeHighlightBtn.classList.toggle('active', mode === 'highlight');
+}
+
+function updateSelectionState() {
+    const hasSelection = boardElement.querySelectorAll('.tile-inner.selected').length > 0;
+    boardElement.classList.toggle('has-selection', hasSelection);
+}
 
 function initGame() {
     state = [];
@@ -57,6 +79,22 @@ function initGame() {
             inner.style.backgroundPosition = `0 0, ${randX}px ${randY}px`;
             
             tile.onclick = () => handleTileClick(i);
+            
+            tile.addEventListener('mousedown', (e) => {
+                if (currentMode === 'highlight') {
+                    e.preventDefault();
+                    isSelecting = !inner.classList.contains('selected');
+                    inner.classList.toggle('selected', isSelecting);
+                    updateSelectionState();
+                }
+            });
+            
+            tile.addEventListener('mouseenter', (e) => {
+                if (currentMode === 'highlight' && isMouseDown) {
+                    inner.classList.toggle('selected', isSelecting);
+                    updateSelectionState();
+                }
+            });
         }
         
         tile.appendChild(inner);
@@ -74,6 +112,7 @@ function initGame() {
     
     // Initially shuffle the board
     shuffleBoard();
+    updateSelectionState();
 }
 
 function getCol(index) { return index % GRID_SIZE; }
@@ -90,6 +129,10 @@ function updateTilePosition(tile) {
 
 function handleTileClick(id) {
     if (isAnimating) return;
+    
+    if (currentMode === 'highlight') {
+        return;
+    }
     
     // Find where THIS tile currently is
     const tileState = state.find(t => t.id === id);

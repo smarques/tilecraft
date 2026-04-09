@@ -1,15 +1,18 @@
 :root {
-    --bg-light: #f5f2eb; /* Warm, creamy studio wall */
+    --bg-light: #f5f2eb;
+    /* Warm, creamy studio wall */
     --text-primary: #3a3836;
     --text-secondary: #7a7571;
     --font-family: 'Outfit', sans-serif;
-    
+
     --grid-size: 6;
     --board-padding: 0.5rem;
     --tile-gap: 4px;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -25,7 +28,7 @@ body {
     align-items: center;
     overflow-x: hidden;
     /* Soft noise texture or vignette for physical vibe */
-    background-image: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.03) 100%);
+    background-image: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.03) 100%);
 }
 
 .app-container {
@@ -48,7 +51,7 @@ header h1 {
     font-weight: 800;
     margin: 0 0 0.5rem 0;
     color: var(--text-primary);
-    text-shadow: 1px 2px 0px rgba(255,255,255,0.8);
+    text-shadow: 1px 2px 0px rgba(255, 255, 255, 0.8);
 }
 
 header p {
@@ -71,22 +74,19 @@ header p {
     right: 2rem;
     font-size: 1.2rem;
     font-weight: 600;
-    background: #e8e4db;
-    padding: 0.8rem 1.5rem;
-    border-radius: 99px;
-    border: 1px solid rgba(255,255,255,0.5);
-    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.05);
+    color: var(--text-primary);
     z-index: 50;
 }
 
 #moves-count {
-    color: #c97a7e; /* A muted terracotta */
+    color: #c97a7e;
+    /* A muted terracotta */
 }
 
 button {
     background: linear-gradient(135deg, #e8e4db 0%, #dcd8cf 100%);
     color: var(--text-primary);
-    border: 1px solid rgba(255,255,255,0.6);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     padding: 0.8rem 2rem;
     border-radius: 99px;
     font-size: 1.1rem;
@@ -94,21 +94,28 @@ button {
     font-family: var(--font-family);
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 
-        0 4px 6px rgba(0,0,0,0.05),
-        inset 1px 1px 2px rgba(255,255,255,0.8);
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.05),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 button:hover {
     transform: translateY(-2px);
-    box-shadow: 
-        0 6px 12px rgba(0,0,0,0.08),
-        inset 1px 1px 2px rgba(255,255,255,0.9);
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.08),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.9);
 }
 
 button:active {
     transform: translateY(1px);
-    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button.active {
+    background: #c97a7e;
+    color: white;
+    border-color: transparent;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .game-board {
@@ -116,13 +123,13 @@ button:active {
     width: min(95vw, 1200px);
     height: min(95vw, 1200px);
     background: #e0dbce;
-    border: 1px solid rgba(0,0,0,0.08);
-    border-top: 1px solid rgba(255,255,255,0.5);
-    border-left: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 12px;
     padding: var(--board-padding);
     /* Inset shadow making the board look like a recessed tray holding the ceramic tiles */
-    box-shadow: 
+    box-shadow:
         inset 3px 3px 8px rgba(0, 0, 0, 0.1),
         inset -3px -3px 8px rgba(255, 255, 255, 0.5),
         0 20px 40px -10px rgba(0, 0, 0, 0.1);
@@ -140,7 +147,8 @@ button:active {
 .tile-inner {
     width: 100%;
     height: 100%;
-    border-radius: 4px; /* classic ceramic square feel */
+    border-radius: 4px;
+    /* classic ceramic square feel */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -153,41 +161,93 @@ button:active {
     transition: all 0.2s ease;
     text-align: center;
     padding: 0.15rem;
-    
+
     /* Materic Ceramic Styling */
-    background-color: #f0f0f0; /* Default fallback */
+    background-color: #f0f0f0;
+    /* Default fallback */
     /* Glossy glaze effect with gradients + raw ceramic texture overlay */
-    background-image: 
-        linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.05) 100%),
+    background-image:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.05) 100%),
         url('ceramic.png');
     background-size: cover, 150px 150px;
     background-blend-mode: normal, multiply;
-    box-shadow: 
-        inset 1px 1px 3px rgba(255, 255, 255, 0.9),  /* Top-left glaze highlight */
-        inset -2px -2px 5px rgba(0, 0, 0, 0.15),     /* Bottom-right rounded shadow */
-        2px 3px 5px rgba(0, 0, 0, 0.2),             /* Drop shadow for physical depth */
+    box-shadow:
+        inset 1px 1px 3px rgba(255, 255, 255, 0.9),
+        /* Top-left glaze highlight */
+        inset -2px -2px 5px rgba(0, 0, 0, 0.15),
+        /* Bottom-right rounded shadow */
+        2px 3px 5px rgba(0, 0, 0, 0.2),
+        /* Drop shadow for physical depth */
         0 1px 2px rgba(0, 0, 0, 0.1);
     /* Debossed/etched text effect for white text */
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 -1px 1px rgba(0,0,0,0.3);
-    border: 1px solid rgba(0,0,0,0.05);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 -1px 1px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .tile:not(.empty-tile):hover .tile-inner {
     transform: translateY(-2px);
-    box-shadow: 
+    box-shadow:
         inset 1px 1px 2px rgba(255, 255, 255, 1),
         inset -2px -2px 4px rgba(0, 0, 0, 0.08),
-        2px 6px 8px rgba(0, 0, 0, 0.15), 
+        2px 6px 8px rgba(0, 0, 0, 0.15),
         0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.game-board.has-selection .tile-inner.selected {
+    border: 1px solid #0c9c67;
+    box-shadow:
+        inset 0 0 0 2px #ffffff,
+        inset 1px 1px 3px rgba(255, 255, 255, 0.9),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.15),
+        2px 3px 5px rgba(0, 0, 0, 0.2),
+        0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+.game-board.has-selection .tile:not(.empty-tile):hover .tile-inner.selected {
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 0 0 2px #ffffff,
+        inset 1px 1px 2px rgba(255, 255, 255, 1),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.08),
+        2px 6px 8px rgba(0, 0, 0, 0.15),
+        0 4px 15px rgba(255, 255, 255, 0.8);
+}
+
+.game-board.has-selection .tile:not(.empty-tile) .tile-inner:not(.selected) {
+    opacity: 0.4;
+}
+
 /* Base pastel ceramic colors by category (Warm Palette) */
-.tile-inner[data-category="space"] { background-color: #E2a893; }    /* Dusty Terracotta */
-.tile-inner[data-category="science"] { background-color: #d1b48e; }  /* Warm Ochre */
-.tile-inner[data-category="magic"] { background-color: #d59f9e; }    /* Dusty Rose */
-.tile-inner[data-category="abstract"] { background-color: #e6cd9e; } /* Soft Mustard */
-.tile-inner[data-category="tech"] { background-color: #aeb493; }     /* Sage Olive Green */
-.tile-inner[data-category="nature"] { background-color: #d09c73; }   /* Burnt Sand */
+.tile-inner[data-category="space"] {
+    background-color: #E2a893;
+}
+
+/* Dusty Terracotta */
+.tile-inner[data-category="science"] {
+    background-color: #d1b48e;
+}
+
+/* Warm Ochre */
+.tile-inner[data-category="magic"] {
+    background-color: #d59f9e;
+}
+
+/* Dusty Rose */
+.tile-inner[data-category="abstract"] {
+    background-color: #e6cd9e;
+}
+
+/* Soft Mustard */
+.tile-inner[data-category="tech"] {
+    background-color: #aeb493;
+}
+
+/* Sage Olive Green */
+.tile-inner[data-category="nature"] {
+    background-color: #d09c73;
+}
+
+/* Burnt Sand */
 
 /* Empty tile styling */
 .empty-tile {
@@ -198,9 +258,17 @@ button:active {
 
 /* Add a very soft success animation when solved */
 @keyframes solved-burst {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .solved .tile-inner {
