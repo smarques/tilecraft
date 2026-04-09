@@ -27,7 +27,13 @@ let isMouseDown = false;
 let isSelecting = true;
 
 window.addEventListener('mousedown', () => isMouseDown = true);
-window.addEventListener('mouseup', () => isMouseDown = false);
+window.addEventListener('mouseup', () => {
+    isMouseDown = false;
+    if (currentMode === 'highlight') {
+        enforceSelectionRules();
+        updateSelectionState();
+    }
+});
 
 const boardElement = document.getElementById('game-board');
 const movesElement = document.getElementById('moves-count');
@@ -47,6 +53,31 @@ function setMode(mode) {
 function updateSelectionState() {
     const hasSelection = boardElement.querySelectorAll('.tile-inner.selected').length > 0;
     boardElement.classList.toggle('has-selection', hasSelection);
+}
+
+function enforceSelectionRules(activeInner = null) {
+    let changed;
+    do {
+        changed = false;
+        const selectedTiles = [...boardElement.querySelectorAll('.tile-inner.selected')];
+        
+        const toDeselect = selectedTiles.filter(inner => {
+            if (inner === activeInner && inner.classList.contains('selected')) return false;
+            
+            const tileData = state.find(t => t.element === inner.parentElement);
+            const hasAdjacentSelected = selectedTiles.some(otherInner => {
+                if (inner === otherInner) return false;
+                const otherData = state.find(t => t.element === otherInner.parentElement);
+                return isAdjacent(tileData.index, otherData.index);
+            });
+            return !hasAdjacentSelected;
+        });
+
+        if (toDeselect.length > 0) {
+            toDeselect.forEach(inner => inner.classList.remove('selected'));
+            changed = true;
+        }
+    } while (changed);
 }
 
 function initGame() {
@@ -85,6 +116,7 @@ function initGame() {
                     e.preventDefault();
                     isSelecting = !inner.classList.contains('selected');
                     inner.classList.toggle('selected', isSelecting);
+                    enforceSelectionRules(inner);
                     updateSelectionState();
                 }
             });
@@ -92,6 +124,7 @@ function initGame() {
             tile.addEventListener('mouseenter', (e) => {
                 if (currentMode === 'highlight' && isMouseDown) {
                     inner.classList.toggle('selected', isSelecting);
+                    enforceSelectionRules(inner);
                     updateSelectionState();
                 }
             });
@@ -148,6 +181,10 @@ function handleTileClick(id) {
         // Swap indexes
         tileState.index = currEmptyIndex;
         emptyTile.index = tileIndex;
+        
+        // Enforce selection contiguity after movement
+        enforceSelectionRules();
+        updateSelectionState();
         
         // Visually update the translated positions
         updateTilePosition(tileState);
