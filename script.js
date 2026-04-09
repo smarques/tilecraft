@@ -10,7 +10,12 @@ const words = [
     { text: "Alpha", category: "abstract" }, { text: "Omega", category: "abstract" }, { text: "Delta", category: "abstract" }, { text: "Sigma", category: "abstract" }, { text: "Rune", category: "magic" }, { text: "Glyph", category: "magic" }, { text: "Shift", category: "abstract" }
 ];
 
-const GRID_SIZE = 8;
+function getRandomWords(count) {
+    const shuffled = [...words].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+}
+
+const GRID_SIZE = 6;
 const TOTAL_TILES = GRID_SIZE * GRID_SIZE;
 
 let state = []; // Array to store the current board state
@@ -28,6 +33,8 @@ function initGame() {
     updateMovesDisplay();
     boardElement.innerHTML = '';
     
+    const currentWords = getRandomWords(TOTAL_TILES - 1);
+    
     // Create tiles
     for (let i = 0; i < TOTAL_TILES; i++) {
         const tile = document.createElement('div');
@@ -40,8 +47,15 @@ function initGame() {
             tile.classList.add('empty-tile');
             // Store the empty tile object
         } else {
-            inner.textContent = words[i].text;
-            inner.setAttribute('data-category', words[i].category);
+            inner.textContent = currentWords[i].text;
+            inner.setAttribute('data-category', currentWords[i].category);
+            
+            // Randomize background position for organic ceramic texture
+            const randX = Math.floor(Math.random() * 1000);
+            const randY = Math.floor(Math.random() * 1000);
+            // The texture is the second layer, the gradient is the first
+            inner.style.backgroundPosition = `0 0, ${randX}px ${randY}px`;
+            
             tile.onclick = () => handleTileClick(i);
         }
         
@@ -182,7 +196,7 @@ function checkWinCondition() {
     }
 }
 
-shuffleBtn.addEventListener('click', shuffleBoard);
+shuffleBtn.addEventListener('click', initGame);
 
 // Initialize on page load
 initGame();
