@@ -374,3 +374,51 @@ button.active {
     top: 0;
     pointer-events: auto;
 }
+
+.modal-content textarea {
+    width: 100%;
+    padding: 1rem;
+    margin: 1.5rem 0 0.5rem 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-family: var(--font-family);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05);
+    background: #f5f2eb;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    resize: vertical;
+}
+
+.modal-content textarea:focus {
+    border-color: #c97a7e;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(201, 122, 126, 0.2);
+}
+
+#word-count-indicator {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    text-align: right;
+    font-weight: 600;
+}
+
+#word-count-indicator.ready {
+    color: #0c9c67;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #e0dbce;
+    color: var(--text-secondary);
+    box-shadow: none;
+    transform: none;
+}

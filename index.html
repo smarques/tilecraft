@@ -27,6 +27,7 @@
                 <button id="shuffle-btn">Shuffle</button>
                 <button id="mode-move" class="active">Move</button>
                 <button id="mode-highlight">Highlight</button>
+                <button id="save-btn">Save</button>
 
             </div>
         </header>
@@ -44,6 +45,29 @@
             <p>Please enter your name to begin discovering the cosmos.</p>
             <input type="text" id="player-name-input" placeholder="Your Name" autocomplete="off" spellcheck="false" />
             <button id="start-game-btn">Start Game</button>
+        </div>
+    </div>
+
+    <div id="save-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2>Save Game</h2>
+            <p>Please enter a comment to save.</p>
+            <textarea id="save-comment" placeholder="Enter your comment here..." rows="8"></textarea>
+            <div id="word-count-indicator">Word count: 0/30</div>
+            <div class="modal-actions">
+                <button id="save-cancel-btn">Cancel</button>
+                <button id="save-confirm-btn" disabled>Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dialog-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 id="dialog-title">Notice</h2>
+            <p id="dialog-message"></p>
+            <div class="modal-actions" style="margin-top: 1.5rem;">
+                <button id="dialog-ok-btn">OK</button>
+            </div>
         </div>
     </div>
 

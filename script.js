@@ -361,7 +361,7 @@ function checkWinCondition() {
     if (isSolved && movesCount > 0) {
         document.body.classList.add('solved');
         setTimeout(() => {
-            alert(`Stellar work! You solved the puzzle in ${movesCount} moves.`);
+            showDialog("Puzzle Solved!", `Stellar work! You solved the puzzle in ${movesCount} moves.`);
         }, 300);
     }
 }
@@ -391,3 +391,67 @@ playerNameInput.addEventListener('keydown', (e) => {
 // Initialize on page load
 initGame();
 playerNameInput.focus();
+
+// Save Feature Logic
+const saveBtn = document.getElementById('save-btn');
+const saveModal = document.getElementById('save-modal');
+const saveComment = document.getElementById('save-comment');
+const wordCountIndicator = document.getElementById('word-count-indicator');
+const saveCancelBtn = document.getElementById('save-cancel-btn');
+const saveConfirmBtn = document.getElementById('save-confirm-btn');
+
+saveBtn.addEventListener('click', () => {
+    const selectedCount = boardElement.querySelectorAll('.tile-inner.selected').length;
+    if (selectedCount === 0) {
+        showDialog("Selection Required", "You can not save unless you have at least one selection group.");
+        return;
+    }
+    saveModal.classList.remove('hidden');
+    saveComment.value = '';
+    updateWordCount();
+    saveComment.focus();
+});
+
+saveCancelBtn.addEventListener('click', () => {
+    saveModal.classList.add('hidden');
+});
+
+saveConfirmBtn.addEventListener('click', () => {
+    saveModal.classList.add('hidden');
+    showDialog("Success", "Game saved successfully!");
+});
+
+saveComment.addEventListener('input', updateWordCount);
+
+function updateWordCount() {
+    const text = saveComment.value.trim();
+    const words = text ? text.split(/\s+/) : [];
+    const count = words.length;
+    
+    wordCountIndicator.textContent = `Word count: ${count}/30`;
+    
+    if (count >= 30) {
+        wordCountIndicator.classList.add('ready');
+        wordCountIndicator.textContent += " (Ready!)";
+        saveConfirmBtn.disabled = false;
+    } else {
+        wordCountIndicator.classList.remove('ready');
+        saveConfirmBtn.disabled = true;
+    }
+}
+
+// Generic Dialog Logic
+const dialogModal = document.getElementById('dialog-modal');
+const dialogTitle = document.getElementById('dialog-title');
+const dialogMessage = document.getElementById('dialog-message');
+const dialogOkBtn = document.getElementById('dialog-ok-btn');
+
+function showDialog(title, message) {
+    dialogTitle.textContent = title;
+    dialogMessage.textContent = message;
+    dialogModal.classList.remove('hidden');
+}
+
+dialogOkBtn.addEventListener('click', () => {
+    dialogModal.classList.add('hidden');
+});
