@@ -68,17 +68,25 @@ header p {
     gap: 1.5rem;
 }
 
-.score-display {
+.stats-container {
     position: absolute;
     top: 2rem;
+    left: 2rem;
     right: 2rem;
+    display: flex;
+    justify-content: space-between;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.moves-display, .score-display {
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--text-primary);
-    z-index: 50;
+    pointer-events: auto;
 }
 
-#moves-count {
+#moves-count, #score-count {
     color: #c97a7e;
     /* A muted terracotta */
 }

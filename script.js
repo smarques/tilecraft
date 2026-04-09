@@ -37,6 +37,7 @@ window.addEventListener('mouseup', () => {
 
 const boardElement = document.getElementById('game-board');
 const movesElement = document.getElementById('moves-count');
+const scoreElement = document.getElementById('score-count');
 const shuffleBtn = document.getElementById('shuffle-btn');
 const modeMoveBtn = document.getElementById('mode-move');
 const modeHighlightBtn = document.getElementById('mode-highlight');
@@ -51,8 +52,9 @@ function setMode(mode) {
 }
 
 function updateSelectionState() {
-    const hasSelection = boardElement.querySelectorAll('.tile-inner.selected').length > 0;
-    boardElement.classList.toggle('has-selection', hasSelection);
+    const selectedCount = boardElement.querySelectorAll('.tile-inner.selected').length;
+    boardElement.classList.toggle('has-selection', selectedCount > 0);
+    updateScoreDisplay();
 }
 
 function enforceSelectionRules(activeInner = null) {
@@ -84,6 +86,7 @@ function initGame() {
     state = [];
     movesCount = 0;
     updateMovesDisplay();
+    updateScoreDisplay();
     boardElement.innerHTML = '';
     
     const currentWords = getRandomWords(TOTAL_TILES - 1);
@@ -216,6 +219,13 @@ function isAdjacent(index1, index2) {
 
 function updateMovesDisplay() {
     movesElement.textContent = movesCount;
+    updateScoreDisplay();
+}
+
+function updateScoreDisplay() {
+    const selectedCount = boardElement.querySelectorAll('.tile-inner.selected').length;
+    const score = movesCount + (selectedCount * 50);
+    scoreElement.textContent = score;
 }
 
 function shuffleBoard() {
