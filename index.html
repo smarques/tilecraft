@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A premium 8x8 sliding tile puzzle game.">
+    <title>Tilecraft - Sliding Puzzle</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Tilecraft</h1>
+            <p>Slide the words to solve the cosmos</p>
+            <div class="controls">
+                <div class="score-display">Moves: <span id="moves-count">0</span></div>
+                <button id="shuffle-btn">Shuffle</button>
+            </div>
+        </header>
+
+        <main>
+            <div id="game-board" class="game-board">
+                <!-- Tiles will be injected here by JS -->
+            </div>
+        </main>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

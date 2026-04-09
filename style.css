@@ -1,0 +1,186 @@
+:root {
+    --bg-dark: #0a0b12;
+    --accent-glow: #7c4dff;
+    --accent-secondary: #00e5ff;
+    --text-primary: #ffffff;
+    --text-secondary: #8a94a6;
+    --tile-bg: rgba(255, 255, 255, 0.03);
+    --tile-border: rgba(255, 255, 255, 0.08);
+    --tile-hover-bg: rgba(255, 255, 255, 0.08);
+    --tile-hover-border: rgba(124, 77, 255, 0.5);
+    --font-family: 'Outfit', sans-serif;
+    
+    --grid-size: 8;
+    --board-padding: 0.5rem;
+    --tile-gap: 4px;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(124, 77, 255, 0.15), transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.1), transparent 40%);
+    background-attachment: fixed;
+    font-family: var(--font-family);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+    padding: 2rem;
+    z-index: 1;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-glow) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(124, 77, 255, 0.3);
+}
+
+header p {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--text-secondary);
+    margin: 0 0 1.5rem 0;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.score-display {
+    font-size: 1.2rem;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.8rem 1.5rem;
+    border-radius: 99px;
+    border: 1px solid var(--tile-border);
+    backdrop-filter: blur(10px);
+}
+
+#moves-count {
+    color: var(--accent-secondary);
+}
+
+button {
+    background: linear-gradient(135deg, var(--accent-glow) 0%, #5d35cc 100%);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 99px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 16px rgba(124, 77, 255, 0.2);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(124, 77, 255, 0.4);
+    background: linear-gradient(135deg, #8c62ff 0%, #6c42e3 100%);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+.game-board {
+    position: relative;
+    /* Responsive square sizing: takes up to 80vw or 80vh */
+    width: min(85vw, 600px);
+    height: min(85vw, 600px);
+    background: rgba(10, 11, 18, 0.6);
+    border: 1px solid var(--tile-border);
+    border-radius: 16px;
+    padding: var(--board-padding);
+    backdrop-filter: blur(20px);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.tile {
+    position: absolute;
+    /* Calculate size based on grid size minus the gaps */
+    width: calc((100% - (var(--board-padding) * 2)) / var(--grid-size));
+    height: calc((100% - (var(--board-padding) * 2)) / var(--grid-size));
+    padding: var(--tile-gap);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 2;
+}
+
+.tile-inner {
+    width: 100%;
+    height: 100%;
+    background: var(--tile-bg);
+    border: 1px solid var(--tile-border);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(0.6rem, 1.5vmin, 0.9rem);
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    text-align: center;
+    padding: 0.2rem;
+    /* Very subtle inner glow */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.tile:not(.empty-tile):hover .tile-inner {
+    background: var(--tile-hover-bg);
+    border-color: var(--tile-hover-border);
+    transform: scale(0.96);
+    box-shadow: 0 4px 12px rgba(124, 77, 255, 0.2);
+}
+
+/* Empty tile styling */
+.empty-tile {
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Add a very soft success animation when solved */
+@keyframes solved-burst {
+    0% { filter: brightness(1) drop-shadow(0 0 0px var(--accent-secondary)); }
+    50% { filter: brightness(1.2) drop-shadow(0 0 15px var(--accent-secondary)); }
+    100% { filter: brightness(1) drop-shadow(0 0 0px var(--accent-secondary)); }
+}
+
+.solved .tile-inner {
+    animation: solved-burst 1s ease-out;
+    border-color: var(--accent-secondary);
+}
