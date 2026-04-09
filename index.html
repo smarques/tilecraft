@@ -17,10 +17,11 @@
     <div class="app-container">
         <div class="stats-container">
             <div class="moves-display">Moves: <span id="moves-count">0</span></div>
+            <div class="game-title">Tilecraft</div>
             <div class="score-display">Score: <span id="score-count">0</span></div>
         </div>
         <header>
-            <h1>Tilecraft</h1>
+            <h1 id="player-name-display"></h1>
             <p>Slide the words to solve the cosmos</p>
             <div class="controls">
                 <button id="shuffle-btn">Shuffle</button>
@@ -35,6 +36,15 @@
                 <!-- Tiles will be injected here by JS -->
             </div>
         </main>
+    </div>
+
+    <div id="name-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Welcome to Tilecraft</h2>
+            <p>Please enter your name to begin discovering the cosmos.</p>
+            <input type="text" id="player-name-input" placeholder="Your Name" autocomplete="off" spellcheck="false" />
+            <button id="start-game-btn">Start Game</button>
+        </div>
     </div>
 
     <script src="script.js"></script>

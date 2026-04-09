@@ -43,6 +43,7 @@ body {
 
 header {
     text-align: center;
+    margin-top: 3rem;
     margin-bottom: 2rem;
 }
 
@@ -52,6 +53,13 @@ header h1 {
     margin: 0 0 0.5rem 0;
     color: var(--text-primary);
     text-shadow: 1px 2px 0px rgba(255, 255, 255, 0.8);
+}
+
+header h1#player-name-display {
+    color: #e63946;
+    min-height: 3.8rem; /* Keeps layout from shifting before name is typed */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 header p {
@@ -284,4 +292,85 @@ button.active {
 
 .solved .tile-inner {
     animation: solved-burst 0.5s ease-out;
+}
+
+/* Modal and Name Display */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: #e8e4db;
+    padding: 2.5rem 3rem;
+    border-radius: 16px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.15),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    max-width: 90%;
+}
+
+.modal-overlay.hidden .modal-content {
+    transform: translateY(-20px);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 2rem;
+    color: var(--text-primary);
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-family: var(--font-family);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05);
+    background: #f5f2eb;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal-content input:focus {
+    border-color: #c97a7e;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(201, 122, 126, 0.2);
+}
+
+.game-title {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    pointer-events: auto;
 }

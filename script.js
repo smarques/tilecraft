@@ -288,5 +288,26 @@ function checkWinCondition() {
 
 shuffleBtn.addEventListener('click', initGame);
 
+const nameModal = document.getElementById('name-modal');
+const playerNameInput = document.getElementById('player-name-input');
+const startGameBtn = document.getElementById('start-game-btn');
+const playerNameDisplay = document.getElementById('player-name-display');
+
+function startGame() {
+    const name = playerNameInput.value.trim();
+    if (name) {
+        playerNameDisplay.textContent = name;
+        nameModal.classList.add('hidden');
+    } else {
+        playerNameInput.focus();
+    }
+}
+
+startGameBtn.addEventListener('click', startGame);
+playerNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') startGame();
+});
+
 // Initialize on page load
 initGame();
+playerNameInput.focus();
