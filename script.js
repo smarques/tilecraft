@@ -414,7 +414,12 @@ saveConfirmBtn.addEventListener('click', () => {
     const commentDisplay = document.getElementById('saved-comment-display');
     commentDisplay.textContent = saveComment.value.trim();
     commentDisplay.classList.remove('hidden');
-    
+
+    const imageFooter = document.getElementById('image-footer');
+    const gameTitle = t('stats.gameTitle');
+    imageFooter.textContent = t('messages.imageFooter', { gameTitle });
+    imageFooter.classList.remove('hidden');
+
     // Give DOM time to update before capturing
     setTimeout(() => {
         const appContainer = document.querySelector('.app-container');
@@ -434,9 +439,10 @@ saveConfirmBtn.addEventListener('click', () => {
             // Restore original styles
             appContainer.style.maxWidth = origMaxWidth;
             appContainer.style.width = origWidth;
+            imageFooter.classList.add('hidden');
             const link = document.createElement('a');
             const playerName = playerNameDisplay.textContent || 'Player';
-            link.download = t('messages.downloadFilename', { playerName });
+            link.download = t('messages.downloadFilename', { playerName, gameTitle });
             link.href = canvas.toDataURL('image/png');
             link.click();
             showDialog(t('messages.success'), t('messages.successMessage'));
@@ -444,6 +450,7 @@ saveConfirmBtn.addEventListener('click', () => {
             // Restore original styles on error too
             appContainer.style.maxWidth = origMaxWidth;
             appContainer.style.width = origWidth;
+            imageFooter.classList.add('hidden');
             console.error("Capture failed:", err);
             showDialog(t('messages.error'), t('messages.errorMessage', { error: err.message || err.toString() }));
         });

@@ -395,7 +395,7 @@ button:disabled {
 .saved-comment {
     margin-top: 2rem;
     padding: 1.5rem;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     color: var(--text-primary);
     background: #e8e4db;
     border-radius: 12px;
@@ -408,5 +408,19 @@ button:disabled {
 }
 
 .saved-comment.hidden {
+    display: none;
+}
+
+.image-footer {
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    text-align: center;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+}
+
+.image-footer.hidden {
     display: none;
 }

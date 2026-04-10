@@ -45,6 +45,7 @@
     "successMessage": "Game saved and image downloaded!",
     "error": "Error",
     "errorMessage": "Failed to generate image: {error}",
-    "downloadFilename": "Tilecraft-{playerName}.png"
+    "downloadFilename": "{playerName} - {gameTitle}.png",
+    "imageFooter": "created with {gameTitle}"
   }
 }
