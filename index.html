@@ -15,15 +15,15 @@
 
 <body>
     <div class="app-container">
-        <div class="stats-container">
+        <div class="stats-container" data-html2canvas-ignore="true">
             <div class="moves-display">Moves: <span id="moves-count">0</span></div>
             <div class="game-title">Tilecraft</div>
             <div class="score-display">Score: <span id="score-count">0</span></div>
         </div>
         <header>
             <h1 id="player-name-display"></h1>
-            <p>Slide the words to solve the cosmos</p>
-            <div class="controls">
+            <p data-html2canvas-ignore="true">Slide the words to solve the cosmos</p>
+            <div class="controls" data-html2canvas-ignore="true">
                 <button id="shuffle-btn">Shuffle</button>
                 <button id="mode-move" class="active">Move</button>
                 <button id="mode-highlight">Highlight</button>
@@ -36,6 +36,7 @@
             <div id="game-board" class="game-board">
                 <!-- Tiles will be injected here by JS -->
             </div>
+            <div id="saved-comment-display" class="saved-comment hidden"></div>
         </main>
     </div>
 
@@ -71,6 +72,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
 

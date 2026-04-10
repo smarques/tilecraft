@@ -418,7 +418,44 @@ saveCancelBtn.addEventListener('click', () => {
 
 saveConfirmBtn.addEventListener('click', () => {
     saveModal.classList.add('hidden');
-    showDialog("Success", "Game saved successfully!");
+    
+    const commentDisplay = document.getElementById('saved-comment-display');
+    commentDisplay.textContent = saveComment.value.trim();
+    commentDisplay.classList.remove('hidden');
+    
+    // Give DOM time to update before capturing
+    setTimeout(() => {
+        const appContainer = document.querySelector('.app-container');
+        // Temporarily expand the container so it fully wraps the board
+        const origMaxWidth = appContainer.style.maxWidth;
+        const origWidth = appContainer.style.width;
+        appContainer.style.maxWidth = 'none';
+        appContainer.style.width = 'max-content';
+        // Force reflow so measurements update
+        void appContainer.offsetWidth;
+        html2canvas(appContainer, {
+            backgroundColor: '#f5f2eb',
+            scale: 2,
+            windowWidth: appContainer.scrollWidth,
+            windowHeight: appContainer.scrollHeight
+        }).then(canvas => {
+            // Restore original styles
+            appContainer.style.maxWidth = origMaxWidth;
+            appContainer.style.width = origWidth;
+            const link = document.createElement('a');
+            const playerName = playerNameDisplay.textContent || 'Player';
+            link.download = `Tilecraft-${playerName}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showDialog("Success", "Game saved and image downloaded!");
+        }).catch(err => {
+            // Restore original styles on error too
+            appContainer.style.maxWidth = origMaxWidth;
+            appContainer.style.width = origWidth;
+            console.error("Capture failed:", err);
+            showDialog("Error", `Failed to generate image: ${err.message || err.toString()}`);
+        });
+    }, 150);
 });
 
 saveComment.addEventListener('input', updateWordCount);
