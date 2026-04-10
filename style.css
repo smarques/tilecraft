@@ -236,37 +236,6 @@ button.active {
     opacity: 0.4;
 }
 
-/* Base pastel ceramic colors by category (Warm Palette) */
-.tile-inner[data-category="space"] {
-    background-color: #E2a893;
-}
-
-/* Dusty Terracotta */
-.tile-inner[data-category="science"] {
-    background-color: #d1b48e;
-}
-
-/* Warm Ochre */
-.tile-inner[data-category="magic"] {
-    background-color: #d59f9e;
-}
-
-/* Dusty Rose */
-.tile-inner[data-category="abstract"] {
-    background-color: #e6cd9e;
-}
-
-/* Soft Mustard */
-.tile-inner[data-category="tech"] {
-    background-color: #aeb493;
-}
-
-/* Sage Olive Green */
-.tile-inner[data-category="nature"] {
-    background-color: #d09c73;
-}
-
-/* Burnt Sand */
 
 /* Empty tile styling */
 .empty-tile {

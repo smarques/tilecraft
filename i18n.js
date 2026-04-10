@@ -1,6 +1,9 @@
 (async function () {
-    const res = await fetch('./locales/en.json');
-    const translations = await res.json();
+    const [translations, gameWords, categories] = await Promise.all([
+        fetch('./locales/en.json').then(r => r.json()),
+        fetch('./data/words.json').then(r => r.json()),
+        fetch('./data/categories.json').then(r => r.json())
+    ]);
 
     function t(key, vars = {}) {
         const value = key.split('.').reduce((obj, k) => obj?.[k], translations);
@@ -9,6 +12,8 @@
     }
 
     window.t = t;
+    window.gameWords = gameWords;
+    window.categories = categories;
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
         el.textContent = t(el.dataset.i18n);

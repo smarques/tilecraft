@@ -1,0 +1,8 @@
+{
+  "space":    { "color": "#E2a893", "label": "Dusty Terracotta" },
+  "science":  { "color": "#d1b48e", "label": "Warm Ochre"       },
+  "magic":    { "color": "#d59f9e", "label": "Dusty Rose"       },
+  "abstract": { "color": "#e6cd9e", "label": "Soft Mustard"     },
+  "tech":     { "color": "#aeb493", "label": "Sage Olive Green" },
+  "nature":   { "color": "#d09c73", "label": "Burnt Sand"       }
+}
