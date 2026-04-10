@@ -16,18 +16,18 @@
 <body>
     <div class="app-container">
         <div class="stats-container" data-html2canvas-ignore="true">
-            <div class="moves-display">Moves: <span id="moves-count">0</span></div>
-            <div class="game-title">Tilecraft</div>
-            <div class="score-display">Score: <span id="score-count">0</span></div>
+            <div class="moves-display"><span data-i18n="stats.moves">Moves: </span><span id="moves-count">0</span></div>
+            <div class="game-title" data-i18n="stats.gameTitle">Tilecraft</div>
+            <div class="score-display"><span data-i18n="stats.score">Score: </span><span id="score-count">0</span></div>
         </div>
         <header>
             <h1 id="player-name-display"></h1>
-            <p data-html2canvas-ignore="true">Slide the words to solve the cosmos</p>
+            <p data-html2canvas-ignore="true" data-i18n="header.tagline">Slide the words to solve the cosmos</p>
             <div class="controls" data-html2canvas-ignore="true">
-                <button id="shuffle-btn">Shuffle</button>
-                <button id="mode-move" class="active">Move</button>
-                <button id="mode-highlight">Highlight</button>
-                <button id="save-btn">Save</button>
+                <button id="shuffle-btn" data-i18n="buttons.shuffle">Shuffle</button>
+                <button id="mode-move" class="active" data-i18n="buttons.move">Move</button>
+                <button id="mode-highlight" data-i18n="buttons.highlight">Highlight</button>
+                <button id="save-btn" data-i18n="buttons.save">Save</button>
 
             </div>
         </header>
@@ -42,37 +42,38 @@
 
     <div id="name-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2>Welcome to Tilecraft</h2>
-            <p>Please enter your name to begin discovering the cosmos.</p>
-            <input type="text" id="player-name-input" placeholder="Your Name" autocomplete="off" spellcheck="false" />
-            <button id="start-game-btn">Start Game</button>
+            <h2 data-i18n="nameModal.title">Welcome to Tilecraft</h2>
+            <p data-i18n="nameModal.instruction">Please enter your name to begin discovering the cosmos.</p>
+            <input type="text" id="player-name-input" data-i18n-placeholder="nameModal.placeholder" placeholder="Your Name" autocomplete="off" spellcheck="false" />
+            <button id="start-game-btn" data-i18n="buttons.startGame">Start Game</button>
         </div>
     </div>
 
     <div id="save-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <h2>Save Game</h2>
-            <p>Please enter a comment to save.</p>
-            <textarea id="save-comment" placeholder="Enter your comment here..." rows="8"></textarea>
+            <h2 data-i18n="saveModal.title">Save Game</h2>
+            <p data-i18n="saveModal.instruction">Please enter a comment to save.</p>
+            <textarea id="save-comment" data-i18n-placeholder="saveModal.placeholder" placeholder="Enter your comment here..." rows="8"></textarea>
             <div id="word-count-indicator">Word count: 0/30</div>
             <div class="modal-actions">
-                <button id="save-cancel-btn">Cancel</button>
-                <button id="save-confirm-btn" disabled>Confirm</button>
+                <button id="save-cancel-btn" data-i18n="buttons.cancel">Cancel</button>
+                <button id="save-confirm-btn" disabled data-i18n="buttons.confirm">Confirm</button>
             </div>
         </div>
     </div>
 
     <div id="dialog-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <h2 id="dialog-title">Notice</h2>
+            <h2 id="dialog-title" data-i18n="dialog.defaultTitle">Notice</h2>
             <p id="dialog-message"></p>
             <div class="modal-actions" style="margin-top: 1.5rem;">
-                <button id="dialog-ok-btn">OK</button>
+                <button id="dialog-ok-btn" data-i18n="buttons.ok">OK</button>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
 </body>
 

@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "Tilecraft - Sliding Puzzle",
+    "description": "A premium 8x8 sliding tile puzzle game."
+  },
+  "stats": {
+    "moves": "Moves: ",
+    "score": "Score: ",
+    "gameTitle": "Tilecraft"
+  },
+  "header": {
+    "tagline": "Slide the words to solve the cosmos"
+  },
+  "buttons": {
+    "shuffle": "Shuffle",
+    "move": "Move",
+    "highlight": "Highlight",
+    "save": "Save",
+    "startGame": "Start Game",
+    "cancel": "Cancel",
+    "confirm": "Confirm and download your Image",
+    "ok": "OK"
+  },
+  "nameModal": {
+    "title": "Welcome to Tilecraft",
+    "instruction": "Please enter your name to begin discovering the cosmos.",
+    "placeholder": "Your Name"
+  },
+  "saveModal": {
+    "title": "Save Game",
+    "instruction": "Please enter a comment to save.",
+    "placeholder": "Enter your comment here...",
+    "wordCount": "Word count: {count}/30",
+    "wordCountReady": "Word count: {count}/30 (Ready!)"
+  },
+  "dialog": {
+    "defaultTitle": "Notice"
+  },
+  "messages": {
+    "puzzleSolved": "Puzzle Solved!",
+    "puzzleSolvedMessage": "Stellar work! You solved the puzzle in {moves} moves.",
+    "selectionRequired": "Selection Required",
+    "selectionRequiredMessage": "You can not save unless you have at least one selection group.",
+    "success": "Success",
+    "successMessage": "Game saved and image downloaded!",
+    "error": "Error",
+    "errorMessage": "Failed to generate image: {error}",
+    "downloadFilename": "Tilecraft-{playerName}.png"
+  }
+}

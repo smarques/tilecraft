@@ -361,7 +361,7 @@ function checkWinCondition() {
     if (isSolved && movesCount > 0) {
         document.body.classList.add('solved');
         setTimeout(() => {
-            showDialog("Puzzle Solved!", `Stellar work! You solved the puzzle in ${movesCount} moves.`);
+            showDialog(t('messages.puzzleSolved'), t('messages.puzzleSolvedMessage', { moves: movesCount }));
         }, 300);
     }
 }
@@ -388,9 +388,11 @@ playerNameInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') startGame();
 });
 
-// Initialize on page load
-initGame();
-playerNameInput.focus();
+// Initialize on page load after translations are ready
+document.addEventListener('i18n:ready', () => {
+    initGame();
+    playerNameInput.focus();
+}, { once: true });
 
 // Save Feature Logic
 const saveBtn = document.getElementById('save-btn');
@@ -403,7 +405,7 @@ const saveConfirmBtn = document.getElementById('save-confirm-btn');
 saveBtn.addEventListener('click', () => {
     const selectedCount = boardElement.querySelectorAll('.tile-inner.selected').length;
     if (selectedCount === 0) {
-        showDialog("Selection Required", "You can not save unless you have at least one selection group.");
+        showDialog(t('messages.selectionRequired'), t('messages.selectionRequiredMessage'));
         return;
     }
     saveModal.classList.remove('hidden');
@@ -444,16 +446,16 @@ saveConfirmBtn.addEventListener('click', () => {
             appContainer.style.width = origWidth;
             const link = document.createElement('a');
             const playerName = playerNameDisplay.textContent || 'Player';
-            link.download = `Tilecraft-${playerName}.png`;
+            link.download = t('messages.downloadFilename', { playerName });
             link.href = canvas.toDataURL('image/png');
             link.click();
-            showDialog("Success", "Game saved and image downloaded!");
+            showDialog(t('messages.success'), t('messages.successMessage'));
         }).catch(err => {
             // Restore original styles on error too
             appContainer.style.maxWidth = origMaxWidth;
             appContainer.style.width = origWidth;
             console.error("Capture failed:", err);
-            showDialog("Error", `Failed to generate image: ${err.message || err.toString()}`);
+            showDialog(t('messages.error'), t('messages.errorMessage', { error: err.message || err.toString() }));
         });
     }, 150);
 });
@@ -465,11 +467,11 @@ function updateWordCount() {
     const words = text ? text.split(/\s+/) : [];
     const count = words.length;
     
-    wordCountIndicator.textContent = `Word count: ${count}/30`;
-    
+    wordCountIndicator.textContent = t('saveModal.wordCount', { count });
+
     if (count >= 30) {
         wordCountIndicator.classList.add('ready');
-        wordCountIndicator.textContent += " (Ready!)";
+        wordCountIndicator.textContent = t('saveModal.wordCountReady', { count });
         saveConfirmBtn.disabled = false;
     } else {
         wordCountIndicator.classList.remove('ready');
