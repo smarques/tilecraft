@@ -522,6 +522,95 @@ dialogOkBtn.addEventListener('click', () => {
     dialogModal.classList.add('hidden');
 });
 
+// --- Menu Logic ---
+const menuBtn = document.getElementById('menu-btn');
+const menuPanel = document.getElementById('menu-panel');
+const menuPlay = document.getElementById('menu-play');
+const menuHighScore = document.getElementById('menu-highscore');
+const scoresModal = document.getElementById('scores-modal');
+const scoresContainer = document.getElementById('scores-container');
+const scoresCloseBtn = document.getElementById('scores-close-btn');
+
+function closeMenu() {
+    menuPanel.classList.add('hidden');
+    menuBtn.classList.remove('open');
+}
+
+menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isHidden = menuPanel.classList.toggle('hidden');
+    menuBtn.classList.toggle('open', !isHidden);
+});
+
+document.addEventListener('click', (e) => {
+    if (!menuPanel.contains(e.target) && e.target !== menuBtn) {
+        closeMenu();
+    }
+});
+
+menuPlay.addEventListener('click', () => {
+    closeMenu();
+    initGame();
+});
+
+menuHighScore.addEventListener('click', async () => {
+    closeMenu();
+    await showHighScores();
+});
+
+scoresCloseBtn.addEventListener('click', () => {
+    scoresModal.classList.add('hidden');
+});
+
+async function showHighScores() {
+    scoresContainer.innerHTML = `<p style="color: var(--text-secondary); text-align: center; margin: 1.5rem 0;">${t('highScores.loading')}</p>`;
+    scoresModal.classList.remove('hidden');
+
+    try {
+        const response = await fetch('/api/scores');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const { scores } = await response.json();
+
+        if (!scores || scores.length === 0) {
+            scoresContainer.innerHTML = `<p class="scores-empty">${t('highScores.noScores')}</p>`;
+            return;
+        }
+
+        const table = document.createElement('table');
+        table.className = 'scores-table';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `<tr>
+            <th>${t('highScores.rank')}</th>
+            <th>${t('highScores.player')}</th>
+            <th>${t('highScores.score')}</th>
+            <th>${t('highScores.moves')}</th>
+            <th>${t('highScores.date')}</th>
+        </tr>`;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        scores.forEach((s, i) => {
+            const row = document.createElement('tr');
+            const date = new Date(s.date).toLocaleDateString();
+            row.innerHTML = `
+                <td class="rank">${i + 1}</td>
+                <td>${s.player_name}</td>
+                <td>${s.score}</td>
+                <td>${s.moves}</td>
+                <td>${date}</td>
+            `;
+            tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        scoresContainer.innerHTML = '';
+        scoresContainer.appendChild(table);
+    } catch (err) {
+        scoresContainer.innerHTML = `<p style="color: #c97a7e; text-align: center; margin: 1.5rem 0;">${t('highScores.loadError')}</p>`;
+    }
+}
+
 // --- Exit / Save to Database ---
 
 function getBoardState() {

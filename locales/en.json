@@ -41,6 +41,21 @@
     "message": "You have highlighted groups. Reshuffling will restart the game and all selections will be lost.",
     "confirmBtn": "Restart"
   },
+  "menu": {
+    "play": "Play",
+    "highScore": "High Scores"
+  },
+  "highScores": {
+    "title": "High Scores",
+    "rank": "#",
+    "player": "Player",
+    "score": "Score",
+    "moves": "Moves",
+    "date": "Date",
+    "noScores": "No scores yet!",
+    "loading": "Loading...",
+    "loadError": "Failed to load scores."
+  },
   "messages": {
     "puzzleSolved": "Puzzle Solved!",
     "puzzleSolvedMessage": "Stellar work! You solved the puzzle in {moves} moves.",

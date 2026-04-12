@@ -18,7 +18,12 @@
         <div class="stats-container" data-html2canvas-ignore="true">
             <div class="moves-display"><span data-i18n="stats.moves">Moves: </span><span id="moves-count">0</span></div>
             <div class="game-title" data-i18n="stats.gameTitle">Tilecraft</div>
-            <div class="score-display"><span data-i18n="stats.score">Score: </span><span id="score-count">0</span></div>
+            <div class="stats-right">
+                <div class="score-display"><span data-i18n="stats.score">Score: </span><span id="score-count">0</span></div>
+                <button id="menu-btn" class="menu-btn" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </div>
         <header>
             <h1 id="player-name-display"></h1>
@@ -79,6 +84,23 @@
             <div class="modal-actions" style="margin-top: 1.5rem;">
                 <button id="reshuffle-cancel-btn" data-i18n="buttons.cancel">Cancel</button>
                 <button id="reshuffle-confirm-btn" data-i18n="reshuffleConfirm.confirmBtn">Restart</button>
+            </div>
+        </div>
+    </div>
+
+    <nav id="menu-panel" class="menu-panel hidden">
+        <ul>
+            <li><button id="menu-play" class="menu-item" data-i18n="menu.play">Play</button></li>
+            <li><button id="menu-highscore" class="menu-item" data-i18n="menu.highScore">High Scores</button></li>
+        </ul>
+    </nav>
+
+    <div id="scores-modal" class="modal-overlay hidden">
+        <div class="modal-content scores-modal-content">
+            <h2 data-i18n="highScores.title">High Scores</h2>
+            <div id="scores-container"></div>
+            <div class="modal-actions" style="margin-top: 1.5rem;">
+                <button id="scores-close-btn" data-i18n="buttons.ok">OK</button>
             </div>
         </div>
     </div>
