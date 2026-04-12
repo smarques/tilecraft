@@ -356,7 +356,14 @@ function checkWinCondition() {
     }
 }
 
-shuffleBtn.addEventListener('click', initGame);
+shuffleBtn.addEventListener('click', () => {
+    const selectedCount = boardElement.querySelectorAll('.tile-inner.selected').length;
+    if (selectedCount > 0) {
+        reshuffleConfirmModal.classList.remove('hidden');
+    } else {
+        initGame();
+    }
+});
 
 const nameModal = document.getElementById('name-modal');
 const playerNameInput = document.getElementById('player-name-input');
@@ -410,7 +417,10 @@ saveCancelBtn.addEventListener('click', () => {
 
 saveConfirmBtn.addEventListener('click', () => {
     saveModal.classList.add('hidden');
-    
+
+    // Save to database in the background — failures are non-blocking
+    saveGameData(saveComment.value.trim()).catch(err => console.warn('DB save failed:', err));
+
     const commentDisplay = document.getElementById('saved-comment-display');
     commentDisplay.textContent = saveComment.value.trim();
     commentDisplay.classList.remove('hidden');
@@ -445,7 +455,10 @@ saveConfirmBtn.addEventListener('click', () => {
             link.download = t('messages.downloadFilename', { playerName, gameTitle });
             link.href = canvas.toDataURL('image/png');
             link.click();
-            showDialog(t('messages.success'), t('messages.successMessage'));
+            showDialog(t('messages.success'), t('messages.successMessage'), () => {
+                document.getElementById('saved-comment-display').classList.add('hidden');
+                initGame();
+            });
         }).catch(err => {
             // Restore original styles on error too
             appContainer.style.maxWidth = origMaxWidth;
@@ -476,18 +489,84 @@ function updateWordCount() {
     }
 }
 
+// Reshuffle Confirm Modal
+const reshuffleConfirmModal = document.getElementById('reshuffle-confirm-modal');
+const reshuffleCancelBtn = document.getElementById('reshuffle-cancel-btn');
+const reshuffleConfirmBtn = document.getElementById('reshuffle-confirm-btn');
+
+reshuffleCancelBtn.addEventListener('click', () => {
+    reshuffleConfirmModal.classList.add('hidden');
+});
+
+reshuffleConfirmBtn.addEventListener('click', () => {
+    reshuffleConfirmModal.classList.add('hidden');
+    initGame();
+});
+
 // Generic Dialog Logic
 const dialogModal = document.getElementById('dialog-modal');
 const dialogTitle = document.getElementById('dialog-title');
 const dialogMessage = document.getElementById('dialog-message');
 const dialogOkBtn = document.getElementById('dialog-ok-btn');
 
-function showDialog(title, message) {
+function showDialog(title, message, onClose = null) {
     dialogTitle.textContent = title;
     dialogMessage.textContent = message;
     dialogModal.classList.remove('hidden');
+    if (onClose) {
+        dialogOkBtn.addEventListener('click', onClose, { once: true });
+    }
 }
 
 dialogOkBtn.addEventListener('click', () => {
     dialogModal.classList.add('hidden');
 });
+
+// --- Exit / Save to Database ---
+
+function getBoardState() {
+    const grid = new Array(TOTAL_TILES).fill(null);
+    state.forEach(tile => {
+        if (tile.id < TOTAL_TILES - 1) {
+            const inner = tile.element.querySelector('.tile-inner');
+            grid[tile.index] = {
+                id: tile.id,
+                text: inner.textContent,
+                category: inner.getAttribute('data-category'),
+                selected: inner.classList.contains('selected')
+            };
+        }
+    });
+    return grid;
+}
+
+function getScore() {
+    const selectedCount = boardElement.querySelectorAll('.tile-inner.selected').length;
+    return movesCount + (selectedCount * 50);
+}
+
+async function saveGameData(statement = '') {
+    const playerName = playerNameDisplay.textContent || 'Anonymous';
+    const payload = {
+        playerName,
+        score: getScore(),
+        moves: movesCount,
+        statement,
+        boardState: getBoardState(),
+        date: new Date().toISOString()
+    };
+
+    const response = await fetch('/api/save-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+}
+

@@ -36,6 +36,11 @@
   "dialog": {
     "defaultTitle": "Notice"
   },
+  "reshuffleConfirm": {
+    "title": "Restart Game?",
+    "message": "You have highlighted groups. Reshuffling will restart the game and all selections will be lost.",
+    "confirmBtn": "Restart"
+  },
   "messages": {
     "puzzleSolved": "Puzzle Solved!",
     "puzzleSolvedMessage": "Stellar work! You solved the puzzle in {moves} moves.",

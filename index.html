@@ -28,7 +28,6 @@
                 <button id="mode-move" class="active" data-i18n="buttons.move">Move</button>
                 <button id="mode-highlight" data-i18n="buttons.highlight">Highlight</button>
                 <button id="save-btn" data-i18n="buttons.save">Save</button>
-
             </div>
         </header>
 
@@ -69,6 +68,17 @@
             <p id="dialog-message"></p>
             <div class="modal-actions" style="margin-top: 1.5rem;">
                 <button id="dialog-ok-btn" data-i18n="buttons.ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reshuffle-confirm-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 data-i18n="reshuffleConfirm.title">Restart Game?</h2>
+            <p data-i18n="reshuffleConfirm.message">You have highlighted groups. Reshuffling will restart the game and all selections will be lost.</p>
+            <div class="modal-actions" style="margin-top: 1.5rem;">
+                <button id="reshuffle-cancel-btn" data-i18n="buttons.cancel">Cancel</button>
+                <button id="reshuffle-confirm-btn" data-i18n="reshuffleConfirm.confirmBtn">Restart</button>
             </div>
         </div>
     </div>
