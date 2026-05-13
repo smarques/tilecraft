@@ -14,12 +14,6 @@
 </head>
 
 <body>
-    <div id="setup-notice" class="setup-notice hidden" data-html2canvas-ignore="true">
-        <span data-i18n="setupNotice.message">This game is using default content — visit</span>
-        <a href="/admin/" data-i18n="setupNotice.link">Admin</a>
-        <span data-i18n="setupNotice.suffix">to finish setting up.</span>
-    </div>
-
     <div class="app-container">
         <div class="stats-container" data-html2canvas-ignore="true">
             <div class="moves-display"><span data-i18n="stats.moves">Moves: </span><span id="moves-count">0</span></div>
@@ -33,6 +27,11 @@
             </div>
         </div>
         <header>
+            <div id="setup-notice" class="setup-notice hidden" data-html2canvas-ignore="true">
+                <span data-i18n="setupNotice.message">This game is using default content — visit</span>
+                <a href="/admin/" data-i18n="setupNotice.link">Admin</a>
+                <span data-i18n="setupNotice.suffix">to finish setting up.</span>
+            </div>
             <h1 id="player-name-display"></h1>
             <p data-html2canvas-ignore="true" data-i18n="header.tagline">Slide the words to solve the cosmos</p>
             <div class="controls" data-html2canvas-ignore="true">

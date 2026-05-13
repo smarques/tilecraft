@@ -32,10 +32,10 @@ body {
 }
 
 .setup-notice {
-    width: 100%;
-    padding: 0.6rem 1.25rem;
+    padding: 0.5rem 1.25rem;
     background: #fffbeb;
-    border-bottom: 1px solid #fcd34d;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
     color: #92400e;
     font-size: 0.85rem;
     font-weight: 500;
@@ -45,6 +45,7 @@ body {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+    margin-bottom: 1rem;
 }
 
 .setup-notice a {

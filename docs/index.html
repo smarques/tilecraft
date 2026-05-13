@@ -507,6 +507,147 @@
       color: var(--text);
     }
 
+    /* ── CONCEPTUAL FRAMEWORK ── */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .concept-card {
+      background: var(--bg);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.75);
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.05),
+        inset 1px 1px 3px rgba(255,255,255,0.9),
+        inset -1px -1px 2px rgba(0,0,0,0.04);
+    }
+
+    .concept-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .concept-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.78;
+      margin-bottom: 0.65rem;
+    }
+
+    .concept-card p:last-child { margin-bottom: 0; }
+
+    /* ── USER MANUAL ── */
+    .manual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .manual-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.8);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .manual-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .manual-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.78;
+      margin-bottom: 0.5rem;
+    }
+
+    .manual-card p:last-child { margin-bottom: 0; }
+
+    .manual-card ol, .manual-card ul {
+      padding-left: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .manual-card li {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.72;
+      margin-bottom: 0.3rem;
+    }
+
+    .manual-card strong { color: var(--text); }
+
+    .manual-tip {
+      margin-top: 0.9rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-deep);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.65;
+      border-left: 3px solid var(--gold);
+    }
+
+    .scoring-box {
+      margin: 0 0 3rem;
+      padding: 2.25rem;
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.8);
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .scoring-box .formula {
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      background: var(--bg-deep);
+      padding: 0.9rem 1.5rem;
+      border-radius: 8px;
+      color: var(--text);
+      display: inline-block;
+      margin: 0.75rem 0;
+    }
+
+    .scoring-box p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.68;
+    }
+
+    .cat-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .cat-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.3rem 0.8rem;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0.04em;
+    }
+
+    .cat-chip.ca { background: #c97a7e; }
+    .cat-chip.cb { background: #b09060; }
+    .cat-chip.cc { background: #c4b49a; color: #5a4a3a; }
+    .cat-chip.cd { background: #8aab90; }
+
     /* ── FOOTER ── */
     footer {
       background: var(--bg-card);
@@ -561,6 +702,8 @@
       }
 
       .facil-grid .feature-list { margin-top: 0 !important; }
+
+      .manual-grid[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
     }
 
     @media (max-width: 480px) {
@@ -578,6 +721,7 @@
 <nav>
   <span class="nav-logo">Tilecraft</span>
   <div class="nav-links">
+    <a href="#manual" class="nav-gh">Manual</a>
     <a href="https://github.com/smarques/tilecraft" class="nav-gh" target="_blank" rel="noopener">GitHub</a>
     <a href="https://tilecraft-game.pages.dev/" class="btn btn-accent" target="_blank" rel="noopener">Try the demo</a>
   </div>
@@ -698,6 +842,42 @@
   </div>
 </div>
 
+<!-- CONCEPTUAL FRAMEWORK -->
+<section class="full-bleed">
+  <div class="container section-pad">
+    <div class="label">Conceptual framework</div>
+    <h2 class="section-title">Why it works the way it works</h2>
+    <p class="section-lead">Four design decisions that shape the participatory dynamic of every Tilecraft session.</p>
+    <div class="concept-grid">
+
+      <div class="concept-card">
+        <h3>The vocabulary as a design act</h3>
+        <p>The 35 tiles are not arbitrary. Selected in advance by the facilitator — or generated through a preliminary collective exercise — the word set carries implicit assumptions, opens certain conversations, and forecloses others. The act of choosing the words is already an interpretive act: it frames the conceptual landscape before a single tile is moved.</p>
+        <p>Participants inevitably notice gaps, surprises, and unexpected adjacencies in the tile set. These reactions are data. They surface assumptions that might otherwise remain invisible and invite the group to interrogate the very language they use to think about a topic.</p>
+      </div>
+
+      <div class="concept-card">
+        <h3>Two registers of engagement</h3>
+        <p><strong>Move mode</strong> introduces productive friction: you cannot simply place a word where you want it. You must navigate around other words, plan several steps ahead, and accept that moving one tile affects the position of others — mirroring the dynamics of real collaborative work, where every choice has consequences for the surrounding field.</p>
+        <p><strong>Highlight mode</strong> shifts register entirely. The contiguity rule requires all selected tiles to form a physically connected group on the board, so meaning must be built from what is adjacent, from what is near at hand. This forces participants to work with proximity and to discover connections they might not have sought deliberately.</p>
+      </div>
+
+      <div class="concept-card">
+        <h3>From intuition to articulation</h3>
+        <p>When a participant saves their tile selection, Tilecraft prompts them to write a statement of at least thirty words explaining their chosen word combination. This transforms the act of highlighting tiles from a gesture into an argument — from "these words feel connected" to "here is why I believe they belong together, and what this tells us about our topic."</p>
+        <p>In a group session, saved statements become the primary artefacts of the exercise. Viewed together, they map the semantic landscape of the session: which connections were made most often, which words were consistently highlighted, which phrases surprised their authors as much as their readers.</p>
+      </div>
+
+      <div class="concept-card">
+        <h3>Playfulness as method</h3>
+        <p>Tilecraft is, genuinely, a game. There is a score, a shuffle, a solved state, and a leaderboard. This playfulness does specific facilitation work: it lowers the stakes of participation. When ideas are expressed through tile arrangements rather than direct verbal statements, participants feel freer to take interpretive risks or to articulate positions they are not yet certain of.</p>
+        <p>Tilecraft belongs to a tradition of participatory design methods that use constraints, games, and material props to make thinking tangible and collective — adding a tightly integrated loop between physical arrangement, semantic composition, and written reflection that produces, at its end, a set of documented and comparable participant perspectives.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- WHITE LABEL + DEPLOY -->
 <section class="full-bleed" id="deploy">
   <div class="container section-pad">
@@ -763,6 +943,115 @@
     </div>
   </div>
 </section>
+
+<!-- USER MANUAL -->
+<div class="container section-pad" id="manual">
+  <div class="label">User manual</div>
+  <h2 class="section-title">How to play</h2>
+  <p class="section-lead">A complete reference for participants and facilitators. All the mechanics, modes, and features in one place.</p>
+
+  <div class="manual-grid">
+
+    <div class="manual-card">
+      <h3>What is Tilecraft?</h3>
+      <p>Tilecraft is a sliding tile puzzle played on a 6×6 grid of word tiles. Your goal is to rearrange the tiles back to their solved positions — but along the way you can highlight groups of tiles that form interesting word combinations and save them to the leaderboard.</p>
+      <p>There are two layers to the game:</p>
+      <ul>
+        <li><strong>Move mode</strong> — slide tiles around the board to solve the puzzle.</li>
+        <li><strong>Highlight mode</strong> — select connected groups of tiles to compose word phrases and earn bonus points.</li>
+      </ul>
+    </div>
+
+    <div class="manual-card">
+      <h3>Starting a game</h3>
+      <ol>
+        <li>Click <strong>Start</strong> in the control bar.</li>
+        <li>Enter your name when prompted. Your name appears at the top of the board and on any saved entry.</li>
+        <li>The board is shuffled automatically (300 random valid moves) so the puzzle is always solvable.</li>
+        <li>The <strong>Shuffle</strong>, <strong>Move</strong>, <strong>Highlight</strong>, and <strong>Save</strong> buttons become active once the game has started.</li>
+      </ol>
+    </div>
+
+    <div class="manual-card">
+      <h3>The board</h3>
+      <p>The board is a 6×6 grid of 35 word tiles and one empty space. Tiles are colour-coded by category:</p>
+      <div class="cat-chips">
+        <span class="cat-chip ca">Activities</span>
+        <span class="cat-chip cb">Relations</span>
+        <span class="cat-chip cc">Materials</span>
+        <span class="cat-chip cd">Tools</span>
+      </div>
+      <p style="margin-top: 0.75rem;">The score and move count are displayed in the stats bar at the top of the page.</p>
+    </div>
+
+  </div>
+
+  <div class="manual-grid" style="grid-template-columns: 1fr 1fr;">
+
+    <div class="manual-card">
+      <h3>Move mode</h3>
+      <p>Move mode is the classic sliding puzzle mechanic.</p>
+      <ul>
+        <li>Click <strong>Move</strong> in the control bar to enter Move mode.</li>
+        <li>Click any tile directly adjacent (up, down, left, or right) to the empty space to slide it into that space.</li>
+        <li>Diagonal moves are not allowed.</li>
+        <li>Each slide counts as <strong>1 move</strong> and plays a sound effect.</li>
+        <li>The puzzle is solved when every tile is back in its original position.</li>
+      </ul>
+      <div class="manual-tip">The empty space starts in the bottom-right corner. Work methodically row by row from the top.</div>
+    </div>
+
+    <div class="manual-card">
+      <h3>Highlight mode</h3>
+      <p>Highlight mode lets you select groups of tiles to form interesting word combinations.</p>
+      <ul>
+        <li>Click <strong>Highlight</strong> in the control bar to enter Highlight mode.</li>
+        <li><strong>Click</strong> a tile to select or deselect it.</li>
+        <li><strong>Click and drag</strong> across tiles to select multiple tiles in one gesture.</li>
+        <li>Selected tiles are outlined in green; unselected tiles fade slightly.</li>
+      </ul>
+      <p><strong>Contiguity rule:</strong> selected tiles must always form a connected group — every selected tile must touch at least one other selected tile horizontally or vertically. If you deselect a tile that was bridging two groups, the orphaned tiles are automatically deselected.</p>
+      <div class="manual-tip">Each highlighted tile adds <strong>50 points</strong> to your score. The more tiles you connect into a meaningful phrase, the higher your score when you save.</div>
+    </div>
+
+  </div>
+
+  <div class="scoring-box">
+    <div class="label" style="margin-bottom: 0.25rem;">Scoring</div>
+    <div class="formula">Score = Total moves + (Number of highlighted tiles × 50)</div>
+    <p>Your score is shown live in the top-right corner. Fewer moves and more highlighted tiles produce a higher score.</p>
+  </div>
+
+  <div class="manual-grid">
+
+    <div class="manual-card">
+      <h3>Saving your creation</h3>
+      <p>You can save a snapshot of the board at any time <strong>while at least one tile is highlighted</strong>.</p>
+      <ol>
+        <li>Click <strong>Save</strong>.</li>
+        <li>Write a statement about your word combination — <strong>at least 30 words</strong> required. The word count updates live; the confirm button enables once you reach the threshold.</li>
+        <li>Click <strong>Confirm</strong>.</li>
+      </ol>
+      <p style="margin-top: 0.75rem;">Your session (name, score, moves, statement, and board layout) is submitted to the leaderboard. A screenshot is captured and downloaded automatically as a PNG file named <code>{YourName} - Tilecraft.png</code>. A new game starts after you dismiss the dialog.</p>
+    </div>
+
+    <div class="manual-card">
+      <h3>Solving the puzzle</h3>
+      <p>The puzzle is solved when every tile is in its original position (the board matches the initial sorted order). A solved animation plays and a dialog congratulates you.</p>
+      <ul>
+        <li>You must have made <strong>at least 1 move</strong> for the win to count — the initial shuffled state does not trigger a win.</li>
+        <li>After solving you can save your session or start a new game from the menu.</li>
+      </ul>
+    </div>
+
+    <div class="manual-card">
+      <h3>High scores &amp; reshuffling</h3>
+      <p>Open the menu (hamburger icon, top right) and select <strong>High Scores</strong> to view the leaderboard. Each entry shows the player name, score, number of moves, written statement, and a preview of the saved board (click to view or download).</p>
+      <p>Click <strong>Shuffle</strong> to randomize the board again. If you have already made moves or highlighted tiles, a confirmation dialog warns you that all progress will be lost. Confirming resets the move count, clears all selections, and applies 300 new random valid moves.</p>
+    </div>
+
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>

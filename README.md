@@ -1,6 +1,6 @@
 # Tilecraft
 
-A sliding tile puzzle game where you arrange word tiles on a 6×6 grid. Built as a static site deployed on Cloudflare Pages, with session data persisted to Cloudflare D1.
+Tilecraft is a Serious Game for Participatory Brainstorming
 
 [Tilecraft concept & facilitation guide](tilecraft.md)
 
