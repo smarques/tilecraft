@@ -25,7 +25,7 @@
     window.t = t;
     window.gameWords = gameWords;
     window.categories = categories;
-    window.usingDefaultContent = !wordsFromAdmin || !categoriesFromAdmin;
+    window.usingDefaultContent = !wordsFromAdmin && !categoriesFromAdmin;
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
         el.textContent = t(el.dataset.i18n);

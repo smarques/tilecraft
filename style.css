@@ -119,6 +119,18 @@ header p {
     pointer-events: auto;
 }
 
+.github-link {
+    color: var(--text-primary);
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    transition: opacity 0.2s;
+}
+
+.github-link:hover {
+    opacity: 1;
+}
+
 .moves-display,
 .score-display {
     font-size: 1.2rem;
