@@ -2,6 +2,8 @@
 
 A sliding tile puzzle game where you arrange word tiles on a 6×6 grid. Built as a static site deployed on Cloudflare Pages, with session data persisted to Cloudflare D1.
 
+[Tilecraft concept & facilitation guide](tilecraft.md)
+
 ---
 
 ## How to play
