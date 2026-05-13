@@ -167,14 +167,14 @@ function initGame() {
         } else {
             const word = currentWords[i];
             inner.textContent = word.text;
+            inner.style.setProperty('--char-count', Math.max(...word.text.split(' ').map(w => w.length)));
             inner.setAttribute('data-category', word.category);
             inner.style.backgroundColor = (window.categories[word.category] || {}).color || '#f0f0f0';
 
-            // Randomize background position for organic ceramic texture
+            // Randomize background position for organic ceramic texture (set via CSS var for ::before)
             const randX = Math.floor(Math.random() * 1000);
             const randY = Math.floor(Math.random() * 1000);
-            // The texture is the second layer, the gradient is the first
-            inner.style.backgroundPosition = `0 0, ${randX}px ${randY}px`;
+            inner.style.setProperty('--texture-pos', `${randX}px ${randY}px`);
             
             tile.onclick = () => handleTileClick(i);
             
@@ -365,16 +365,31 @@ shuffleBtn.addEventListener('click', () => {
     }
 });
 
+const startBtn = document.getElementById('start-btn');
 const nameModal = document.getElementById('name-modal');
 const playerNameInput = document.getElementById('player-name-input');
 const startGameBtn = document.getElementById('start-game-btn');
 const playerNameDisplay = document.getElementById('player-name-display');
+
+startBtn.addEventListener('click', () => {
+    nameModal.classList.remove('hidden');
+    playerNameInput.focus();
+});
+
+document.getElementById('name-modal-close-btn').addEventListener('click', () => {
+    nameModal.classList.add('hidden');
+});
 
 function startGame() {
     const name = playerNameInput.value.trim();
     if (name) {
         playerNameDisplay.textContent = name;
         nameModal.classList.add('hidden');
+        shuffleBtn.disabled = false;
+        modeMoveBtn.disabled = false;
+        modeHighlightBtn.disabled = false;
+        document.getElementById('save-btn').disabled = false;
+        boardElement.style.pointerEvents = 'auto';
     } else {
         playerNameInput.focus();
     }
@@ -388,7 +403,7 @@ playerNameInput.addEventListener('keydown', (e) => {
 // Initialize on page load after translations are ready
 document.addEventListener('i18n:ready', () => {
     initGame();
-    playerNameInput.focus();
+    boardElement.style.pointerEvents = 'none';
 }, { once: true });
 
 // Save Feature Logic
@@ -432,7 +447,6 @@ saveConfirmBtn.addEventListener('click', () => {
 
     // Give DOM time to update before capturing
     setTimeout(() => {
-        const appContainer = document.querySelector('.app-container');
         // Temporarily expand the container so it fully wraps the board
         const origMaxWidth = appContainer.style.maxWidth;
         const origWidth = appContainer.style.width;
@@ -527,13 +541,24 @@ const menuBtn = document.getElementById('menu-btn');
 const menuPanel = document.getElementById('menu-panel');
 const menuPlay = document.getElementById('menu-play');
 const menuHighScore = document.getElementById('menu-highscore');
-const scoresModal = document.getElementById('scores-modal');
+const scoresPage = document.getElementById('scores-page');
 const scoresContainer = document.getElementById('scores-container');
-const scoresCloseBtn = document.getElementById('scores-close-btn');
+const scoresBackBtn = document.getElementById('scores-back-btn');
+const appContainer = document.querySelector('.app-container');
 
 function closeMenu() {
     menuPanel.classList.add('hidden');
     menuBtn.classList.remove('open');
+}
+
+function showScoresPage() {
+    appContainer.style.display = 'none';
+    scoresPage.classList.remove('hidden');
+}
+
+function hideScoresPage() {
+    scoresPage.classList.add('hidden');
+    appContainer.style.display = '';
 }
 
 menuBtn.addEventListener('click', (e) => {
@@ -558,13 +583,13 @@ menuHighScore.addEventListener('click', async () => {
     await showHighScores();
 });
 
-scoresCloseBtn.addEventListener('click', () => {
-    scoresModal.classList.add('hidden');
+scoresBackBtn.addEventListener('click', () => {
+    hideScoresPage();
 });
 
 async function showHighScores() {
     scoresContainer.innerHTML = `<p style="color: var(--text-secondary); text-align: center; margin: 1.5rem 0;">${t('highScores.loading')}</p>`;
-    scoresModal.classList.remove('hidden');
+    showScoresPage();
 
     try {
         const response = await fetch('/api/scores');
@@ -576,38 +601,207 @@ async function showHighScores() {
             return;
         }
 
-        const table = document.createElement('table');
-        table.className = 'scores-table';
-
-        const thead = document.createElement('thead');
-        thead.innerHTML = `<tr>
-            <th>${t('highScores.rank')}</th>
-            <th>${t('highScores.player')}</th>
-            <th>${t('highScores.score')}</th>
-            <th>${t('highScores.moves')}</th>
-            <th>${t('highScores.date')}</th>
-        </tr>`;
-        table.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
-        scores.forEach((s, i) => {
-            const row = document.createElement('tr');
-            const date = new Date(s.date).toLocaleDateString();
-            row.innerHTML = `
-                <td class="rank">${i + 1}</td>
-                <td>${s.player_name}</td>
-                <td>${s.score}</td>
-                <td>${s.moves}</td>
-                <td>${date}</td>
-            `;
-            tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
-
         scoresContainer.innerHTML = '';
-        scoresContainer.appendChild(table);
+        scores.forEach((s, i) => {
+            const card = document.createElement('div');
+            card.className = 'score-card';
+
+            const date = new Date(s.date).toLocaleDateString();
+
+            const header = document.createElement('div');
+            header.className = 'score-card-header';
+            header.innerHTML = `
+                <span class="score-card-rank">${i + 1}</span>
+                <span class="score-card-player">${s.player_name}</span>
+                <div class="score-card-stats">
+                    <span>${s.score} pts</span>
+                    <span>${s.moves} moves</span>
+                    <span>${date}</span>
+                </div>
+            `;
+            card.appendChild(header);
+
+            if (s.statement) {
+                const statement = document.createElement('p');
+                statement.className = 'score-card-statement';
+                statement.textContent = `"${s.statement}"`;
+                card.appendChild(statement);
+            }
+
+            if (s.board_state) {
+                const btnRow = document.createElement('div');
+                btnRow.className = 'score-card-btn-row';
+
+                const viewBtn = document.createElement('button');
+                viewBtn.className = 'score-card-view-btn';
+                viewBtn.textContent = t('highScores.viewBoard');
+                viewBtn.addEventListener('click', () => showSavedBoard(s));
+
+                const dlBtn = document.createElement('button');
+                dlBtn.className = 'score-card-view-btn score-card-download-btn';
+                dlBtn.textContent = t('highScores.downloadBoard');
+                dlBtn.addEventListener('click', async () => {
+                    dlBtn.disabled = true;
+                    try {
+                        const dataURL = await captureSavedBoard(s);
+                        const link = document.createElement('a');
+                        const gameTitle = t('stats.gameTitle');
+                        link.download = t('messages.downloadFilename', { playerName: s.player_name, gameTitle });
+                        link.href = dataURL;
+                        link.click();
+                    } finally {
+                        dlBtn.disabled = false;
+                    }
+                });
+
+                btnRow.appendChild(viewBtn);
+                btnRow.appendChild(dlBtn);
+                card.appendChild(btnRow);
+            }
+
+            scoresContainer.appendChild(card);
+        });
     } catch (err) {
         scoresContainer.innerHTML = `<p style="color: #c97a7e; text-align: center; margin: 1.5rem 0;">${t('highScores.loadError')}</p>`;
+    }
+}
+
+// --- Board Preview ---
+const boardPreviewModal = document.getElementById('board-preview-modal');
+const boardPreviewPlayer = document.getElementById('board-preview-player');
+const boardPreviewLoading = document.getElementById('board-preview-loading');
+const boardPreviewImg = document.getElementById('board-preview-img');
+const boardPreviewCloseBtn = document.getElementById('board-preview-close-btn');
+
+boardPreviewCloseBtn.addEventListener('click', () => {
+    boardPreviewModal.classList.add('hidden');
+});
+
+boardPreviewModal.addEventListener('click', (e) => {
+    if (e.target === boardPreviewModal) boardPreviewModal.classList.add('hidden');
+});
+
+async function showSavedBoard(score) {
+    boardPreviewPlayer.textContent = t('highScores.boardPreviewTitle', { player: score.player_name });
+    boardPreviewImg.src = '';
+    boardPreviewImg.style.display = 'none';
+    boardPreviewLoading.style.display = '';
+    boardPreviewModal.classList.remove('hidden');
+
+    try {
+        const dataURL = await captureSavedBoard(score);
+        boardPreviewImg.src = dataURL;
+        boardPreviewImg.style.display = '';
+        boardPreviewLoading.style.display = 'none';
+    } catch (err) {
+        boardPreviewLoading.textContent = t('highScores.loadError');
+    }
+}
+
+async function captureSavedBoard(score) {
+    const boardState = typeof score.board_state === 'string'
+        ? JSON.parse(score.board_state)
+        : score.board_state;
+
+    // Save current DOM state
+    const savedBoardHTML = boardElement.innerHTML;
+    const savedBoardClass = boardElement.className;
+    const savedPlayerName = playerNameDisplay.textContent;
+    const commentDisplay = document.getElementById('saved-comment-display');
+    const savedCommentHidden = commentDisplay.classList.contains('hidden');
+    const savedCommentText = commentDisplay.textContent;
+
+    // Scores page is visible; temporarily swap to app view for capture
+    scoresPage.classList.add('hidden');
+    appContainer.style.display = '';
+
+    // Set player name and show the statement + footer (same as save flow)
+    playerNameDisplay.textContent = score.player_name;
+
+    const imageFooter = document.getElementById('image-footer');
+    const gameTitle = t('stats.gameTitle');
+    imageFooter.textContent = t('messages.imageFooter', { gameTitle });
+    imageFooter.classList.remove('hidden');
+
+    if (score.statement) {
+        commentDisplay.textContent = `"${score.statement}"`;
+        commentDisplay.classList.remove('hidden');
+    } else {
+        commentDisplay.classList.add('hidden');
+    }
+
+    // Render the saved board state
+    boardElement.innerHTML = '';
+    boardElement.className = 'game-board';
+
+    boardState.forEach((tileData, index) => {
+        const tile = document.createElement('div');
+        tile.classList.add('tile');
+
+        const inner = document.createElement('div');
+        inner.classList.add('tile-inner');
+
+        if (tileData) {
+            inner.textContent = tileData.text;
+            inner.style.setProperty('--char-count', Math.max(...tileData.text.split(' ').map(w => w.length)));
+            inner.setAttribute('data-category', tileData.category);
+            inner.style.backgroundColor = (window.categories[tileData.category] || {}).color || '#f0f0f0';
+            const randX = Math.floor(Math.random() * 1000);
+            const randY = Math.floor(Math.random() * 1000);
+            inner.style.backgroundPosition = `0 0, ${randX}px ${randY}px`;
+            if (tileData.selected) inner.classList.add('selected');
+        } else {
+            tile.classList.add('empty-tile');
+        }
+
+        tile.appendChild(inner);
+        boardElement.appendChild(tile);
+
+        const col = index % GRID_SIZE;
+        const row = Math.floor(index / GRID_SIZE);
+        tile.style.transform = `translate(${col * 100}%, ${row * 100}%)`;
+    });
+
+    if (boardState.some(t => t && t.selected)) {
+        boardElement.classList.add('has-selection');
+    }
+
+    // Capture using the same approach as the save flow
+    const origMaxWidth = appContainer.style.maxWidth;
+    const origWidth = appContainer.style.width;
+    appContainer.style.maxWidth = 'none';
+    appContainer.style.width = 'max-content';
+    void appContainer.offsetWidth;
+
+    try {
+        const canvas = await html2canvas(appContainer, {
+            backgroundColor: '#f5f2eb',
+            scale: 2,
+            windowWidth: appContainer.scrollWidth,
+            windowHeight: appContainer.scrollHeight
+        });
+        return canvas.toDataURL('image/png');
+    } finally {
+        // Restore app container sizing
+        appContainer.style.maxWidth = origMaxWidth;
+        appContainer.style.width = origWidth;
+
+        // Hide the footer added for capture
+        imageFooter.classList.add('hidden');
+
+        // Restore board
+        boardElement.innerHTML = savedBoardHTML;
+        boardElement.className = savedBoardClass;
+
+        // Restore player name and comment
+        playerNameDisplay.textContent = savedPlayerName;
+        commentDisplay.textContent = savedCommentText;
+        if (savedCommentHidden) commentDisplay.classList.add('hidden');
+        else commentDisplay.classList.remove('hidden');
+
+        // Return to scores page
+        appContainer.style.display = 'none';
+        scoresPage.classList.remove('hidden');
     }
 }
 

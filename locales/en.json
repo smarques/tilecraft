@@ -16,6 +16,7 @@
     "move": "Move",
     "highlight": "Highlight",
     "save": "Save",
+    "start": "Start",
     "startGame": "Start Game",
     "cancel": "Cancel",
     "confirm": "Confirm and download your Image",
@@ -54,7 +55,10 @@
     "date": "Date",
     "noScores": "No scores yet!",
     "loading": "Loading...",
-    "loadError": "Failed to load scores."
+    "loadError": "Failed to load scores.",
+    "viewBoard": "View Board",
+    "downloadBoard": "Download",
+    "boardPreviewTitle": "{player}'s board"
   },
   "messages": {
     "puzzleSolved": "Puzzle Solved!",

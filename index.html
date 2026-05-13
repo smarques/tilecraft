@@ -29,10 +29,11 @@
             <h1 id="player-name-display"></h1>
             <p data-html2canvas-ignore="true" data-i18n="header.tagline">Slide the words to solve the cosmos</p>
             <div class="controls" data-html2canvas-ignore="true">
-                <button id="shuffle-btn" data-i18n="buttons.shuffle">Shuffle</button>
-                <button id="mode-move" class="active" data-i18n="buttons.move">Move</button>
-                <button id="mode-highlight" data-i18n="buttons.highlight">Highlight</button>
-                <button id="save-btn" data-i18n="buttons.save">Save</button>
+                <button id="start-btn" data-i18n="buttons.start">Start</button>
+                <button id="shuffle-btn" disabled data-i18n="buttons.shuffle">Shuffle</button>
+                <button id="mode-move" disabled class="active" data-i18n="buttons.move">Move</button>
+                <button id="mode-highlight" disabled data-i18n="buttons.highlight">Highlight</button>
+                <button id="save-btn" disabled data-i18n="buttons.save">Save</button>
             </div>
         </header>
 
@@ -45,8 +46,9 @@
         </main>
     </div>
 
-    <div id="name-modal" class="modal-overlay">
+    <div id="name-modal" class="modal-overlay hidden">
         <div class="modal-content">
+            <button id="name-modal-close-btn" class="modal-close-btn" aria-label="Close">&times;</button>
             <h2 data-i18n="nameModal.title">Welcome to Tilecraft</h2>
             <p data-i18n="nameModal.instruction">Please enter your name to begin discovering the cosmos.</p>
             <input type="text" id="player-name-input" data-i18n-placeholder="nameModal.placeholder" placeholder="Your Name" autocomplete="off" spellcheck="false" />
@@ -95,13 +97,20 @@
         </ul>
     </nav>
 
-    <div id="scores-modal" class="modal-overlay hidden">
-        <div class="modal-content scores-modal-content">
+    <div id="scores-page" class="scores-page hidden">
+        <div class="scores-page-header">
+            <button id="scores-back-btn" class="scores-back-btn" aria-label="Back">&#8592;</button>
             <h2 data-i18n="highScores.title">High Scores</h2>
-            <div id="scores-container"></div>
-            <div class="modal-actions" style="margin-top: 1.5rem;">
-                <button id="scores-close-btn" data-i18n="buttons.ok">OK</button>
-            </div>
+        </div>
+        <div id="scores-container"></div>
+    </div>
+
+    <div id="board-preview-modal" class="modal-overlay hidden">
+        <div class="modal-content board-preview-content">
+            <button id="board-preview-close-btn" class="modal-close-btn" aria-label="Close">&times;</button>
+            <p id="board-preview-player" class="board-preview-player"></p>
+            <p id="board-preview-loading" class="board-preview-loading" data-i18n="highScores.loading">Loading...</p>
+            <img id="board-preview-img" class="board-preview-img" alt="">
         </div>
     </div>
 

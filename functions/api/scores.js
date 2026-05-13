@@ -16,7 +16,7 @@ export async function onRequestGet(context) {
 
     try {
         const { results } = await env.DB.prepare(
-            `SELECT player_name, score, moves, statement, date
+            `SELECT player_name, score, moves, statement, board_state, date
              FROM game_sessions
              ORDER BY score DESC
              LIMIT 100`

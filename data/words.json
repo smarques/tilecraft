@@ -56,7 +56,7 @@
     "category": "tools"
   },
   {
-    "text": "COPY/PROTECT",
+    "text": "COPY PROTECT",
     "category": "activities"
   },
   {
@@ -124,7 +124,7 @@
     "category": "materials"
   },
   {
-    "text": "HUMAN-BEING",
+    "text": "HUMAN BEING",
     "category": "relations"
   },
   {
@@ -152,11 +152,11 @@
     "category": "relations"
   },
   {
-    "text": "LEARN/PASS",
+    "text": "LEARN PASS",
     "category": "activities"
   },
   {
-    "text": "LEAVE/TAKE",
+    "text": "LEAVE TAKE",
     "category": "activities"
   },
   {
@@ -168,11 +168,11 @@
     "category": "relations"
   },
   {
-    "text": "LOCAL-GLOBAL",
+    "text": "LOCAL GLOBAL",
     "category": "relations"
   },
   {
-    "text": "LOCALLY-IMPORT",
+    "text": "LOCALLY IMPORT",
     "category": "relations"
   },
   {
@@ -180,7 +180,7 @@
     "category": "activities"
   },
   {
-    "text": "MARKETING-CHINA",
+    "text": "MARKETING CHINA",
     "category": "relations"
   },
   {
@@ -278,10 +278,6 @@
   {
     "text": "TRADITION",
     "category": "relations"
-  },
-  {
-    "text": "TRIER",
-    "category": "tools"
   },
   {
     "text": "TRUST",
