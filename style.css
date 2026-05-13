@@ -48,6 +48,10 @@ body {
     margin-bottom: 1rem;
 }
 
+.setup-notice.hidden {
+    display: none;
+}
+
 .setup-notice a {
     color: #b45309;
     font-weight: 700;
@@ -80,7 +84,8 @@ header h1 {
 
 header h1#player-name-display {
     color: #e63946;
-    min-height: 3.8rem; /* Keeps layout from shifting before name is typed */
+    min-height: 3.8rem;
+    /* Keeps layout from shifting before name is typed */
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -350,7 +355,7 @@ button.active {
     background: #e8e4db;
     padding: 2.5rem 3rem;
     border-radius: 16px;
-    box-shadow: 
+    box-shadow:
         0 20px 40px rgba(0, 0, 0, 0.15),
         inset 2px 2px 5px rgba(255, 255, 255, 0.8),
         inset -2px -2px 5px rgba(0, 0, 0, 0.05);
@@ -475,7 +480,7 @@ button:disabled {
     background: #e8e4db;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 
+    box-shadow:
         0 4px 6px rgba(0, 0, 0, 0.05),
         inset 1px 1px 2px rgba(255, 255, 255, 0.8);
     text-align: center;
@@ -636,8 +641,15 @@ a.menu-item {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .scores-page-header {
@@ -787,20 +799,56 @@ a.menu-item {
     font-size: 0.95rem;
 }
 
-.about-body h1, .about-body h2, .about-body h3 {
+.about-body h1,
+.about-body h2,
+.about-body h3 {
     font-weight: 700;
     margin: 1.4em 0 0.5em;
     line-height: 1.25;
 }
 
-.about-body h1 { font-size: 1.5rem; }
-.about-body h2 { font-size: 1.2rem; }
-.about-body h3 { font-size: 1rem; }
+.about-body h1 {
+    font-size: 1.5rem;
+}
 
-.about-body p { margin: 0.75em 0; }
-.about-body ul, .about-body ol { padding-left: 1.5em; margin: 0.75em 0; }
-.about-body li { margin: 0.3em 0; }
-.about-body a { color: var(--accent-color, #9b8ec4); }
-.about-body strong { font-weight: 700; }
-.about-body em { font-style: italic; }
-.about-body code { font-family: monospace; font-size: 0.9em; background: rgba(255,255,255,0.07); padding: 0.1em 0.3em; border-radius: 3px; }
+.about-body h2 {
+    font-size: 1.2rem;
+}
+
+.about-body h3 {
+    font-size: 1rem;
+}
+
+.about-body p {
+    margin: 0.75em 0;
+}
+
+.about-body ul,
+.about-body ol {
+    padding-left: 1.5em;
+    margin: 0.75em 0;
+}
+
+.about-body li {
+    margin: 0.3em 0;
+}
+
+.about-body a {
+    color: var(--accent-color, #9b8ec4);
+}
+
+.about-body strong {
+    font-weight: 700;
+}
+
+.about-body em {
+    font-style: italic;
+}
+
+.about-body code {
+    font-family: monospace;
+    font-size: 0.9em;
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}

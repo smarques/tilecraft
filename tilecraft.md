@@ -120,13 +120,6 @@ What happens next:
 - A screenshot of the board is captured and downloaded automatically as a PNG file named `{YourName} - Tilecraft.png`.
 - A new game starts after you dismiss the confirmation dialog.
 
-### Solving the Puzzle
-
-The puzzle is solved when every tile is in its original position (the board matches the initial sorted order). A solved animation plays and a dialog congratulates you.
-
-- You must have made **at least 1 move** for the win to count (the initial shuffled state does not trigger a win).
-- After solving you can save your session or start a new game from the menu.
-
 ### High Scores
 
 Open the menu (hamburger icon, top right) and select **High Scores** to view the leaderboard. Each entry shows:

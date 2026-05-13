@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
             --bg: #1a1a2e;
@@ -51,11 +58,33 @@
             max-width: 380px;
         }
 
-        .login-card h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.25rem; }
-        .login-card .subtitle { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 2rem; }
+        .login-card h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
 
-        .field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
-        .field label { font-size: 0.8rem; font-weight: 600; color: var(--text-dim); letter-spacing: 0.05em; text-transform: uppercase; }
+        .login-card .subtitle {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .field label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
         .field input {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -67,7 +96,10 @@
             outline: none;
             transition: border-color 0.2s;
         }
-        .field input:focus { border-color: var(--accent); }
+
+        .field input:focus {
+            border-color: var(--accent);
+        }
 
         .error-msg {
             background: rgba(201, 57, 43, 0.15);
@@ -79,7 +111,10 @@
             margin-bottom: 1rem;
             display: none;
         }
-        .error-msg.visible { display: block; }
+
+        .error-msg.visible {
+            display: block;
+        }
 
         /* ── Buttons ── */
         .btn {
@@ -92,19 +127,61 @@
             padding: 0.65rem 1.2rem;
             transition: opacity 0.15s, transform 0.1s;
         }
-        .btn:active { transform: scale(0.97); }
-        .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-        .btn-primary { background: var(--accent); color: #fff; width: 100%; padding: 0.8rem; font-size: 1rem; }
-        .btn-primary:hover:not(:disabled) { opacity: 0.88; }
-        .btn-secondary { background: var(--surface2); color: var(--text); }
-        .btn-secondary:hover:not(:disabled) { opacity: 0.8; }
-        .btn-danger { background: var(--danger); color: #fff; }
-        .btn-danger:hover:not(:disabled) { opacity: 0.85; }
-        .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.88;
+        }
+
+        .btn-secondary {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            opacity: 0.8;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            opacity: 0.85;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+        }
 
         /* ── Admin shell ── */
-        #admin-screen { display: none; flex-direction: column; min-height: 100vh; }
-        #admin-screen.visible { display: flex; }
+        #admin-screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #admin-screen.visible {
+            display: flex;
+        }
 
         .admin-header {
             background: var(--surface);
@@ -117,10 +194,21 @@
             top: 0;
             z-index: 10;
         }
-        .admin-header .brand { font-size: 1rem; font-weight: 800; }
-        .admin-header .brand span { color: var(--accent); }
 
-        .admin-nav { display: flex; gap: 0.3rem; }
+        .admin-header .brand {
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .admin-header .brand span {
+            color: var(--accent);
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 0.3rem;
+        }
+
         .nav-btn {
             background: transparent;
             border: 1px solid transparent;
@@ -133,19 +221,53 @@
             padding: 0.45rem 0.9rem;
             transition: color 0.15s, border-color 0.15s, background 0.15s;
         }
-        .nav-btn:hover { color: var(--text); border-color: var(--border); }
-        .nav-btn.active { background: var(--surface2); color: var(--text); border-color: var(--border); }
 
-        .admin-content { flex: 1; padding: 2rem 1.5rem; max-width: 1000px; width: 100%; margin: 0 auto; }
+        .nav-btn:hover {
+            color: var(--text);
+            border-color: var(--border);
+        }
 
-        .tab { display: none; }
-        .tab.active { display: block; }
+        .nav-btn.active {
+            background: var(--surface2);
+            color: var(--text);
+            border-color: var(--border);
+        }
 
-        .tab-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.25rem; }
-        .tab-desc { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .admin-content {
+            flex: 1;
+            padding: 2rem 1.5rem;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab.active {
+            display: block;
+        }
+
+        .tab-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .tab-desc {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
 
         /* ── Table ── */
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
         .data-table th {
             background: var(--surface2);
             color: var(--text-dim);
@@ -156,18 +278,42 @@
             text-align: left;
             text-transform: uppercase;
         }
-        .data-table th:first-child { border-radius: var(--radius) 0 0 0; }
-        .data-table th:last-child { border-radius: 0 var(--radius) 0 0; }
-        .data-table td { border-bottom: 1px solid var(--border); padding: 0.65rem 0.9rem; vertical-align: middle; }
-        .data-table tr:hover td { background: rgba(255,255,255,0.03); }
-        .data-table .truncate { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        .table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: auto; }
+        .data-table th:first-child {
+            border-radius: var(--radius) 0 0 0;
+        }
+
+        .data-table th:last-child {
+            border-radius: 0 var(--radius) 0 0;
+        }
+
+        .data-table td {
+            border-bottom: 1px solid var(--border);
+            padding: 0.65rem 0.9rem;
+            vertical-align: middle;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .data-table .truncate {
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .table-wrap {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: auto;
+        }
 
         /* ── Confirm overlay ── */
         .overlay {
             align-items: center;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             bottom: 0;
             display: none;
             justify-content: center;
@@ -177,7 +323,11 @@
             top: 0;
             z-index: 100;
         }
-        .overlay.visible { display: flex; }
+
+        .overlay.visible {
+            display: flex;
+        }
+
         .dialog {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -186,9 +336,25 @@
             padding: 2rem;
             width: 90%;
         }
-        .dialog h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
-        .dialog p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; }
-        .dialog-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+        .dialog h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+        }
+
+        .dialog p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .dialog-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
 
         /* ── Words editor ── */
         .words-toolbar {
@@ -198,7 +364,9 @@
             margin-bottom: 1rem;
             flex-wrap: wrap;
         }
-        .words-toolbar input[type="text"], .words-toolbar select {
+
+        .words-toolbar input[type="text"],
+        .words-toolbar select {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
@@ -208,12 +376,28 @@
             padding: 0.5rem 0.75rem;
             outline: none;
         }
-        .words-toolbar input[type="text"]:focus, .words-toolbar select:focus { border-color: var(--accent); }
-        .words-toolbar input[type="text"] { flex: 1; min-width: 140px; }
-        .word-count { color: var(--text-dim); font-size: 0.8rem; margin-left: auto; }
+
+        .words-toolbar input[type="text"]:focus,
+        .words-toolbar select:focus {
+            border-color: var(--accent);
+        }
+
+        .words-toolbar input[type="text"] {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .word-count {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
 
         /* ── Settings ── */
-        .settings-group { margin-bottom: 2rem; }
+        .settings-group {
+            margin-bottom: 2rem;
+        }
+
         .settings-group label {
             display: block;
             font-size: 0.8rem;
@@ -223,6 +407,7 @@
             letter-spacing: 0.05em;
             margin-bottom: 0.5rem;
         }
+
         .settings-group input[type="text"],
         .settings-group textarea {
             background: var(--surface);
@@ -237,9 +422,22 @@
             transition: border-color 0.2s;
             resize: vertical;
         }
-        .settings-group input:focus, .settings-group textarea:focus { border-color: var(--accent); }
-        .settings-group textarea { min-height: 220px; line-height: 1.6; }
-        .settings-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+
+        .settings-group input:focus,
+        .settings-group textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .settings-group textarea {
+            min-height: 220px;
+            line-height: 1.6;
+        }
+
+        .settings-hint {
+            color: var(--text-dim);
+            font-size: 0.78rem;
+            margin-top: 0.4rem;
+        }
 
         .save-bar {
             display: flex;
@@ -247,296 +445,435 @@
             gap: 1rem;
             margin-top: 1.5rem;
         }
-        .btn-flash-ok { background: var(--success) !important; }
-        .btn-flash-err { background: var(--danger) !important; }
 
-        .loading { color: var(--text-dim); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
-
-        .section-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0 2rem; }
-        .section-heading { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .cat-key { background: var(--surface2); border-radius: 4px; font-family: monospace; font-size: 0.85rem; padding: 0.15em 0.4em; }
-        .cat-label-input, .cat-color-cell input[type="text"] {
-            background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
-            color: var(--text); font-family: var(--font); font-size: 0.875rem;
-            padding: 0.35rem 0.6rem; width: 100%; outline: none;
+        .btn-flash-ok {
+            background: var(--success) !important;
         }
-        .cat-label-input:focus { border-color: var(--accent); }
-        .cat-color-input { width: 44px; height: 32px; padding: 2px 4px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); cursor: pointer; }
+
+        .btn-flash-err {
+            background: var(--danger) !important;
+        }
+
+        .loading {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2.5rem 0 2rem;
+        }
+
+        .section-heading {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .cat-key {
+            background: var(--surface2);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 0.15em 0.4em;
+        }
+
+        .cat-label-input,
+        .cat-color-cell input[type="text"] {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 0.875rem;
+            padding: 0.35rem 0.6rem;
+            width: 100%;
+            outline: none;
+        }
+
+        .cat-label-input:focus {
+            border-color: var(--accent);
+        }
+
+        .cat-color-input {
+            width: 44px;
+            height: 32px;
+            padding: 2px 4px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
 
-<!-- Login -->
-<section id="login-screen">
-    <div class="login-card">
-        <h1>Tilecraft <span style="color:var(--accent)">Admin</span></h1>
-        <p class="subtitle">Sign in to manage your game</p>
-        <div id="login-error" class="error-msg"></div>
-        <form id="login-form" autocomplete="on">
-            <div class="field">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" autocomplete="username" required>
-            </div>
-            <div class="field">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" autocomplete="current-password" required>
-            </div>
-            <button type="submit" class="btn btn-primary" id="login-btn">Sign in</button>
-        </form>
-    </div>
-</section>
-
-<!-- Admin shell -->
-<section id="admin-screen">
-    <header class="admin-header">
-        <div class="brand">Tilecraft <span>Admin</span></div>
-        <nav class="admin-nav">
-            <button class="nav-btn active" data-tab="scores">Scores</button>
-            <button class="nav-btn" data-tab="words">Words</button>
-            <button class="nav-btn" data-tab="settings">Settings</button>
-            <button class="nav-btn" data-tab="users">Users</button>
-        </nav>
-        <div style="display:flex;gap:0.5rem;align-items:center;">
-            <a href="/" class="btn btn-secondary btn-sm">← Game</a>
-            <button class="btn btn-secondary btn-sm" id="logout-btn">Logout</button>
-        </div>
-    </header>
-
-    <div class="admin-content">
-
-        <!-- Scores tab -->
-        <div class="tab active" id="tab-scores">
-            <h2 class="tab-title">High Scores</h2>
-            <p class="tab-desc">Browse and remove entries from the leaderboard.</p>
-            <div id="scores-content"><p class="loading">Loading…</p></div>
-        </div>
-
-        <!-- Words tab -->
-        <div class="tab" id="tab-words">
-            <h2 class="tab-title">Word List</h2>
-            <p class="tab-desc">Manage the words that appear on the game tiles. Changes take effect immediately after saving.</p>
-
-            <div class="words-toolbar">
-                <input type="text" id="new-word-text" placeholder="New word…" maxlength="30">
-                <select id="new-word-category"></select>
-                <button class="btn btn-secondary" id="add-word-btn">Add</button>
-                <button class="btn btn-secondary btn-sm" id="load-static-btn" title="Reset to the words from the bundled data/words.json">Load defaults</button>
-                <span class="word-count" id="word-count-display"></span>
-            </div>
-
-            <div class="table-wrap" id="words-table-wrap">
-                <p class="loading">Loading…</p>
-            </div>
-
-            <div class="save-bar">
-                <button class="btn btn-primary" id="save-words-btn">Save word list</button>
-            </div>
-
-            <hr class="section-divider">
-
-            <h3 class="section-heading">Categories</h3>
-            <p class="tab-desc">Categories group words by tile colour. A category key cannot be changed after creation — only its label and colour.</p>
-
-            <div class="words-toolbar">
-                <input type="text" id="new-cat-key" placeholder="key (e.g. tools)" maxlength="30" style="max-width:160px">
-                <input type="text" id="new-cat-label" placeholder="Label" maxlength="50" style="max-width:160px">
-                <input type="color" id="new-cat-color" value="#cccccc" style="width:44px;height:38px;padding:2px 4px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);cursor:pointer">
-                <button class="btn btn-secondary" id="add-cat-btn">Add category</button>
-            </div>
-
-            <div class="table-wrap" id="cats-table-wrap">
-                <p class="loading">Loading…</p>
-            </div>
-
-            <div class="save-bar">
-                <button class="btn btn-primary" id="save-cats-btn">Save categories</button>
-            </div>
-        </div>
-
-        <!-- Users tab -->
-        <div class="tab" id="tab-users">
-            <h2 class="tab-title">Admin Users</h2>
-            <p class="tab-desc">Manage admin accounts. You cannot delete your own account or the last remaining admin.</p>
-
-            <div class="settings-group">
-                <label>New Admin</label>
-                <div class="words-toolbar" style="margin-bottom:0.4rem">
-                    <input type="text" id="new-admin-username" placeholder="Username" maxlength="50" style="max-width:200px">
-                    <input type="password" id="new-admin-password" placeholder="Password (min 8 chars)" style="flex:1">
-                    <button class="btn btn-secondary" id="add-admin-btn">Add admin</button>
+    <!-- Login -->
+    <section id="login-screen">
+        <div class="login-card">
+            <h1>Tilecraft <span style="color:var(--accent)">Admin</span></h1>
+            <p class="subtitle">Sign in to manage your game</p>
+            <div id="login-error" class="error-msg"></div>
+            <form id="login-form" autocomplete="on">
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" autocomplete="username" required>
                 </div>
-                <p id="add-admin-error" class="settings-hint" style="color:var(--danger);display:none"></p>
-            </div>
-
-            <div id="users-content"><p class="loading">Loading…</p></div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="login-btn">Sign in</button>
+            </form>
         </div>
+    </section>
 
-        <!-- Settings tab -->
-        <div class="tab" id="tab-settings">
-            <h2 class="tab-title">Settings</h2>
-            <p class="tab-desc">Edit the site tagline and the About page content (Markdown supported).</p>
+    <!-- Admin shell -->
+    <section id="admin-screen">
+        <header class="admin-header">
+            <div class="brand">Tilecraft <span>Admin</span></div>
+            <nav class="admin-nav">
+                <button class="nav-btn active" data-tab="scores">Scores</button>
+                <button class="nav-btn" data-tab="words">Words</button>
+                <button class="nav-btn" data-tab="settings">Settings</button>
+                <button class="nav-btn" data-tab="users">Users</button>
+            </nav>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+                <a href="/" class="btn btn-secondary btn-sm">← Game</a>
+                <button class="btn btn-secondary btn-sm" id="logout-btn">Logout</button>
+            </div>
+        </header>
 
-            <div class="settings-group">
-                <label for="setting-tagline">Header tagline</label>
-                <input type="text" id="setting-tagline" maxlength="200" placeholder="Slide the words to solve the cosmos">
+        <div class="admin-content">
+
+            <!-- Scores tab -->
+            <div class="tab active" id="tab-scores">
+                <h2 class="tab-title">High Scores</h2>
+                <p class="tab-desc">Browse and remove entries from the leaderboard.</p>
+                <div id="scores-content">
+                    <p class="loading">Loading…</p>
+                </div>
             </div>
 
-            <div class="settings-group">
-                <label for="setting-about">About page (Markdown)</label>
-                <textarea id="setting-about" placeholder="# About Tilecraft&#10;&#10;Write about your game here…"></textarea>
-                <p class="settings-hint">Supports headings, bold, italic, lists, and links.</p>
+            <!-- Words tab -->
+            <div class="tab" id="tab-words">
+                <h2 class="tab-title">Word List</h2>
+                <p class="tab-desc">Manage the words that appear on the game tiles. Changes take effect immediately
+                    after saving.</p>
+
+                <div class="words-toolbar">
+                    <input type="text" id="new-word-text" placeholder="New word…" maxlength="30">
+                    <select id="new-word-category"></select>
+                    <button class="btn btn-secondary" id="add-word-btn">Add</button>
+                    <button class="btn btn-secondary btn-sm" id="load-static-btn"
+                        title="Reset to the words from the bundled data/words.json">Load defaults</button>
+                    <span class="word-count" id="word-count-display"></span>
+                </div>
+
+                <div class="table-wrap" id="words-table-wrap">
+                    <p class="loading">Loading…</p>
+                </div>
+
+                <div class="save-bar">
+                    <button class="btn btn-primary" id="save-words-btn">Save word list</button>
+                </div>
+
+                <hr class="section-divider">
+
+                <h3 class="section-heading">Categories</h3>
+                <p class="tab-desc">Categories group words by tile colour. A category key cannot be changed after
+                    creation — only its label and colour.</p>
+
+                <div class="words-toolbar">
+                    <input type="text" id="new-cat-key" placeholder="key (e.g. tools)" maxlength="30"
+                        style="max-width:160px">
+                    <input type="text" id="new-cat-label" placeholder="Label" maxlength="50" style="max-width:160px">
+                    <input type="color" id="new-cat-color" value="#cccccc"
+                        style="width:44px;height:38px;padding:2px 4px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);cursor:pointer">
+                    <button class="btn btn-secondary" id="add-cat-btn">Add category</button>
+                </div>
+
+                <div class="table-wrap" id="cats-table-wrap">
+                    <p class="loading">Loading…</p>
+                </div>
+
+                <div class="save-bar">
+                    <button class="btn btn-primary" id="save-cats-btn">Save categories</button>
+                </div>
             </div>
 
-            <div class="save-bar">
-                <button class="btn btn-primary" id="save-settings-btn">Save settings</button>
+            <!-- Users tab -->
+            <div class="tab" id="tab-users">
+                <h2 class="tab-title">Admin Users</h2>
+                <p class="tab-desc">Manage admin accounts. You cannot delete your own account or the last remaining
+                    admin.</p>
+
+                <div class="settings-group">
+                    <label>New Admin</label>
+                    <div class="words-toolbar" style="margin-bottom:0.4rem">
+                        <input type="text" id="new-admin-username" placeholder="Username" maxlength="50"
+                            style="max-width:200px">
+                        <input type="password" id="new-admin-password" placeholder="Password (min 8 chars)"
+                            style="flex:1">
+                        <button class="btn btn-secondary" id="add-admin-btn">Add admin</button>
+                    </div>
+                    <p id="add-admin-error" class="settings-hint" style="color:var(--danger);display:none"></p>
+                </div>
+
+                <div id="users-content">
+                    <p class="loading">Loading…</p>
+                </div>
+            </div>
+
+            <!-- Settings tab -->
+            <div class="tab" id="tab-settings">
+                <h2 class="tab-title">Settings</h2>
+                <p class="tab-desc">Edit the site tagline and the About page content (Markdown supported).</p>
+
+                <div class="settings-group">
+                    <label for="setting-tagline">Header tagline</label>
+                    <input type="text" id="setting-tagline" maxlength="200"
+                        placeholder="Slide the words to solve the cosmos">
+                </div>
+
+                <div class="settings-group">
+                    <label for="setting-about">About page (Markdown)</label>
+                    <textarea id="setting-about"
+                        placeholder="# About Tilecraft&#10;&#10;Write about your game here…"></textarea>
+                    <p class="settings-hint">Supports headings, bold, italic, lists, and links.</p>
+                </div>
+
+                <div class="save-bar">
+                    <button class="btn btn-primary" id="save-settings-btn">Save settings</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Delete confirm overlay -->
+    <div class="overlay" id="confirm-overlay">
+        <div class="dialog">
+            <h3>Delete score?</h3>
+            <p id="confirm-desc"></p>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+                <button class="btn btn-danger" id="confirm-delete">Delete</button>
             </div>
         </div>
-
     </div>
-</section>
 
-<!-- Delete confirm overlay -->
-<div class="overlay" id="confirm-overlay">
-    <div class="dialog">
-        <h3>Delete score?</h3>
-        <p id="confirm-desc"></p>
-        <div class="dialog-actions">
-            <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
-            <button class="btn btn-danger" id="confirm-delete">Delete</button>
+    <!-- Set password overlay -->
+    <div class="overlay" id="setpw-overlay">
+        <div class="dialog">
+            <h3>Set password for <span id="setpw-target-name"></span></h3>
+            <div class="field" style="margin:1rem 0 0.5rem">
+                <label for="setpw-input">New password</label>
+                <input type="password" id="setpw-input" placeholder="Min 8 characters" autocomplete="new-password">
+            </div>
+            <p id="setpw-error" style="color:var(--danger);font-size:0.85rem;margin-bottom:1rem;display:none"></p>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="setpw-cancel">Cancel</button>
+                <button class="btn btn-primary" id="setpw-confirm" style="width:auto">Set password</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Set password overlay -->
-<div class="overlay" id="setpw-overlay">
-    <div class="dialog">
-        <h3>Set password for <span id="setpw-target-name"></span></h3>
-        <div class="field" style="margin:1rem 0 0.5rem">
-            <label for="setpw-input">New password</label>
-            <input type="password" id="setpw-input" placeholder="Min 8 characters" autocomplete="new-password">
-        </div>
-        <p id="setpw-error" style="color:var(--danger);font-size:0.85rem;margin-bottom:1rem;display:none"></p>
-        <div class="dialog-actions">
-            <button class="btn btn-secondary" id="setpw-cancel">Cancel</button>
-            <button class="btn btn-primary" id="setpw-confirm" style="width:auto">Set password</button>
-        </div>
-    </div>
-</div>
+    <script>
+        const API = '/api/admin';
+        let currentWords = [];
+        let pendingDeleteId = null;
+        let currentUsername = null;
+        let pendingSetPwTarget = null;
 
-<script>
-const API = '/api/admin';
-let currentWords = [];
-let pendingDeleteId = null;
-let currentUsername = null;
-let pendingSetPwTarget = null;
+        // ── Helpers ──────────────────────────────────────────────────────────────────
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+        async function apiFetch(path, opts = {}) {
+            const res = await fetch(API + path, {
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+                ...opts
+            });
+            const data = await res.json().catch(() => ({}));
+            return { ok: res.ok, status: res.status, data };
+        }
 
-async function apiFetch(path, opts = {}) {
-    const res = await fetch(API + path, {
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
-        ...opts
-    });
-    const data = await res.json().catch(() => ({}));
-    return { ok: res.ok, status: res.status, data };
-}
+        function showFeedback(el, msg, isErr) {
+            el.textContent = msg;
+            el.className = 'save-feedback ' + (isErr ? 'err' : 'ok');
+            clearTimeout(el._t);
+            el._t = setTimeout(() => { el.className = 'save-feedback'; }, 3500);
+        }
 
-function showFeedback(el, msg, isErr) {
-    el.textContent = msg;
-    el.className = 'save-feedback ' + (isErr ? 'err' : 'ok');
-    clearTimeout(el._t);
-    el._t = setTimeout(() => { el.className = 'save-feedback'; }, 3500);
-}
+        function flashBtn(btn, msg, isErr) {
+            const original = btn.dataset.originalLabel || btn.textContent;
+            btn.dataset.originalLabel = original;
+            btn.textContent = msg;
+            btn.classList.add(isErr ? 'btn-flash-err' : 'btn-flash-ok');
+            clearTimeout(btn._ft);
+            btn._ft = setTimeout(() => {
+                btn.textContent = original;
+                btn.classList.remove('btn-flash-ok', 'btn-flash-err');
+            }, 2500);
+        }
 
-function flashBtn(btn, msg, isErr) {
-    const original = btn.dataset.originalLabel || btn.textContent;
-    btn.dataset.originalLabel = original;
-    btn.textContent = msg;
-    btn.classList.add(isErr ? 'btn-flash-err' : 'btn-flash-ok');
-    clearTimeout(btn._ft);
-    btn._ft = setTimeout(() => {
-        btn.textContent = original;
-        btn.classList.remove('btn-flash-ok', 'btn-flash-err');
-    }, 2500);
-}
+        // ── Auth ─────────────────────────────────────────────────────────────────────
 
-// ── Auth ─────────────────────────────────────────────────────────────────────
+        async function checkAuth() {
+            const { ok, data } = await apiFetch('/me');
+            if (ok) currentUsername = data.username;
+            return ok;
+        }
 
-async function checkAuth() {
-    const { ok, data } = await apiFetch('/me');
-    if (ok) currentUsername = data.username;
-    return ok;
-}
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const errEl = document.getElementById('login-error');
+            const originalLabel = btn.dataset.originalLabel || btn.textContent;
+            btn.dataset.originalLabel = originalLabel;
+            btn.disabled = true;
+            btn.textContent = 'Signing in…';
+            errEl.classList.remove('visible');
 
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('login-btn');
-    const errEl = document.getElementById('login-error');
-    btn.disabled = true;
-    btn.textContent = 'Signing in…';
-    errEl.classList.remove('visible');
+            let loginOk = false;
+            try {
+                const { ok, data } = await apiFetch('/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
 
-    const { ok, data } = await apiFetch('/login', {
-        method: 'POST',
-        body: JSON.stringify({
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value
-        })
-    });
+                if (ok) {
+                    loginOk = true;
+                    await showAdmin();
+                    return;
+                }
 
-    if (ok) {
-        showAdmin();
-    } else {
-        errEl.textContent = data.error || 'Login failed';
-        errEl.classList.add('visible');
-        btn.disabled = false;
-        btn.textContent = 'Sign in';
-    }
-});
+                errEl.textContent = data.error || 'Login failed';
+                errEl.classList.add('visible');
+            } catch (err) {
+                errEl.textContent = err?.message || 'Login failed';
+                errEl.classList.add('visible');
+            } finally {
+                if (!loginOk) {
+                    btn.disabled = false;
+                    btn.textContent = originalLabel;
+                }
+            }
+        });
 
-document.getElementById('logout-btn').addEventListener('click', async () => {
-    await apiFetch('/logout', { method: 'POST' });
-    location.reload();
-});
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('logout-btn');
+            const originalLabel = btn.dataset.originalLabel || btn.textContent;
+            btn.dataset.originalLabel = originalLabel;
+            btn.disabled = true;
+            btn.textContent = 'Logging out…';
 
-// ── Tab navigation ────────────────────────────────────────────────────────────
+            try {
+                const { ok, data } = await apiFetch('/logout', { method: 'POST' });
+                if (!ok) throw new Error(data.error || 'Logout failed');
+                location.reload();
+            } catch (err) {
+                alert(err?.message || 'Logout failed');
+                btn.disabled = false;
+                btn.textContent = originalLabel;
+            }
+        });
 
-document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const tab = btn.dataset.tab;
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + tab).classList.add('active');
-        if (tab === 'words') { if (currentWords.length === 0) loadWords(); renderCatsTable(); }
-        if (tab === 'settings') loadSettings();
-        if (tab === 'users') loadUsers();
-    });
-});
+        // ── Tab navigation ────────────────────────────────────────────────────────────
 
-// ── Show admin ────────────────────────────────────────────────────────────────
+        const DEFAULT_ADMIN_TAB = 'scores';
+        const ADMIN_TAB_STORAGE_KEY = 'tilecraft.admin.activeTab';
+        const ADMIN_TABS = new Set(['scores', 'words', 'settings', 'users']);
 
-async function showAdmin() {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-screen').classList.add('visible');
-    await Promise.all([loadCategories(), loadScores()]);
-}
+        function normalizeAdminTab(tab) {
+            return ADMIN_TABS.has(tab) ? tab : DEFAULT_ADMIN_TAB;
+        }
 
-// ── Scores ────────────────────────────────────────────────────────────────────
+        function getStoredAdminTab() {
+            const fromHash = normalizeAdminTab(window.location.hash.replace('#', ''));
+            if (fromHash !== DEFAULT_ADMIN_TAB || window.location.hash === `#${DEFAULT_ADMIN_TAB}`) {
+                return fromHash;
+            }
 
-async function loadScores() {
-    const el = document.getElementById('scores-content');
-    el.innerHTML = '<p class="loading">Loading…</p>';
-    const { ok, data } = await apiFetch('/scores');
-    if (!ok) { el.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
+            try {
+                return normalizeAdminTab(localStorage.getItem(ADMIN_TAB_STORAGE_KEY));
+            } catch {
+                return DEFAULT_ADMIN_TAB;
+            }
+        }
 
-    if (!data.scores.length) {
-        el.innerHTML = '<p class="loading">No scores yet.</p>';
-        return;
-    }
+        function activateAdminTab(tab, { persist = true } = {}) {
+            const nextTab = normalizeAdminTab(tab);
 
-    const rows = data.scores.map(s => `
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === nextTab);
+            });
+
+            document.querySelectorAll('.tab').forEach(panel => {
+                panel.classList.toggle('active', panel.id === `tab-${nextTab}`);
+            });
+
+            if (nextTab === 'words') {
+                if (currentWords.length === 0) loadWords();
+                renderCatsTable();
+            }
+            if (nextTab === 'settings') loadSettings();
+            if (nextTab === 'users') loadUsers();
+
+            if (!persist) return;
+
+            try {
+                localStorage.setItem(ADMIN_TAB_STORAGE_KEY, nextTab);
+            } catch {
+                // Ignore storage failures (e.g. privacy mode restrictions).
+            }
+
+            const nextHash = `#${nextTab}`;
+            if (window.location.hash !== nextHash) {
+                history.replaceState(null, '', nextHash);
+            }
+        }
+
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activateAdminTab(btn.dataset.tab);
+            });
+        });
+
+        window.addEventListener('hashchange', () => {
+            activateAdminTab(window.location.hash.replace('#', ''));
+        });
+
+        // ── Show admin ────────────────────────────────────────────────────────────────
+
+        async function showAdmin() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-screen').classList.add('visible');
+            await Promise.all([loadCategories(), loadScores()]);
+            activateAdminTab(getStoredAdminTab(), { persist: false });
+        }
+
+        // ── Scores ────────────────────────────────────────────────────────────────────
+
+        async function loadScores() {
+            const el = document.getElementById('scores-content');
+            el.innerHTML = '<p class="loading">Loading…</p>';
+            const { ok, data } = await apiFetch('/scores');
+            if (!ok) { el.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
+
+            if (!data.scores.length) {
+                el.innerHTML = '<p class="loading">No scores yet.</p>';
+                return;
+            }
+
+            const rows = data.scores.map(s => `
         <tr>
             <td>${s.id}</td>
             <td>${esc(s.player_name)}</td>
@@ -547,7 +884,7 @@ async function loadScores() {
             <td><button class="btn btn-danger btn-sm" data-id="${s.id}" data-name="${esc(s.player_name)}" data-score="${s.score}">Delete</button></td>
         </tr>`).join('');
 
-    el.innerHTML = `
+            el.innerHTML = `
         <div class="table-wrap">
             <table class="data-table">
                 <thead><tr>
@@ -558,76 +895,76 @@ async function loadScores() {
             </table>
         </div>`;
 
-    el.querySelectorAll('[data-id]').forEach(btn => {
-        btn.addEventListener('click', () => confirmDelete(
-            parseInt(btn.dataset.id),
-            btn.dataset.name,
-            btn.dataset.score
-        ));
-    });
-}
-
-function confirmDelete(id, name, score) {
-    pendingDeleteId = id;
-    document.getElementById('confirm-desc').textContent =
-        `Delete score ${score} by "${name}"? This cannot be undone.`;
-    document.getElementById('confirm-overlay').classList.add('visible');
-}
-
-document.getElementById('confirm-cancel').addEventListener('click', () => {
-    document.getElementById('confirm-overlay').classList.remove('visible');
-    pendingDeleteId = null;
-});
-
-document.getElementById('confirm-delete').addEventListener('click', async () => {
-    if (!pendingDeleteId) return;
-    document.getElementById('confirm-overlay').classList.remove('visible');
-    const { ok, data } = await apiFetch(`/scores/${pendingDeleteId}`, { method: 'DELETE' });
-    pendingDeleteId = null;
-    if (ok) {
-        loadScores();
-    } else {
-        alert('Delete failed: ' + (data.error || 'unknown error'));
-    }
-});
-
-// ── Words ─────────────────────────────────────────────────────────────────────
-
-let currentCategories = {};
-
-async function loadCategories() {
-    try {
-        // Try D1 first (via admin endpoint), fall back to static file
-        const { ok, data } = await apiFetch('/categories');
-        if (ok && data.categories) {
-            currentCategories = data.categories;
-        } else {
-            const res = await fetch('/data/categories.json');
-            currentCategories = await res.json();
+            el.querySelectorAll('[data-id]').forEach(btn => {
+                btn.addEventListener('click', () => confirmDelete(
+                    parseInt(btn.dataset.id),
+                    btn.dataset.name,
+                    btn.dataset.score
+                ));
+            });
         }
-    } catch {
-        currentCategories = {};
-    }
-    refreshCategorySelect();
-    renderCatsTable();
-}
 
-function refreshCategorySelect() {
-    const sel = document.getElementById('new-word-category');
-    sel.innerHTML = Object.entries(currentCategories)
-        .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
-}
+        function confirmDelete(id, name, score) {
+            pendingDeleteId = id;
+            document.getElementById('confirm-desc').textContent =
+                `Delete score ${score} by "${name}"? This cannot be undone.`;
+            document.getElementById('confirm-overlay').classList.add('visible');
+        }
 
-function renderCatsTable() {
-    const wrap = document.getElementById('cats-table-wrap');
-    const entries = Object.entries(currentCategories);
+        document.getElementById('confirm-cancel').addEventListener('click', () => {
+            document.getElementById('confirm-overlay').classList.remove('visible');
+            pendingDeleteId = null;
+        });
 
-    if (!entries.length) {
-        wrap.innerHTML = '<p class="loading">No categories yet. Add one above.</p>';
-        return;
-    }
+        document.getElementById('confirm-delete').addEventListener('click', async () => {
+            if (!pendingDeleteId) return;
+            document.getElementById('confirm-overlay').classList.remove('visible');
+            const { ok, data } = await apiFetch(`/scores/${pendingDeleteId}`, { method: 'DELETE' });
+            pendingDeleteId = null;
+            if (ok) {
+                loadScores();
+            } else {
+                alert('Delete failed: ' + (data.error || 'unknown error'));
+            }
+        });
 
-    const rows = entries.map(([key, { label, color }]) => `
+        // ── Words ─────────────────────────────────────────────────────────────────────
+
+        let currentCategories = {};
+
+        async function loadCategories() {
+            try {
+                // Try D1 first (via admin endpoint), fall back to static file
+                const { ok, data } = await apiFetch('/categories');
+                if (ok && data.categories) {
+                    currentCategories = data.categories;
+                } else {
+                    const res = await fetch('/data/categories.json');
+                    currentCategories = await res.json();
+                }
+            } catch {
+                currentCategories = {};
+            }
+            refreshCategorySelect();
+            renderCatsTable();
+        }
+
+        function refreshCategorySelect() {
+            const sel = document.getElementById('new-word-category');
+            sel.innerHTML = Object.entries(currentCategories)
+                .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
+        }
+
+        function renderCatsTable() {
+            const wrap = document.getElementById('cats-table-wrap');
+            const entries = Object.entries(currentCategories);
+
+            if (!entries.length) {
+                wrap.innerHTML = '<p class="loading">No categories yet. Add one above.</p>';
+                return;
+            }
+
+            const rows = entries.map(([key, { label, color }]) => `
         <tr data-cat-key="${esc(key)}">
             <td><code class="cat-key">${esc(key)}</code></td>
             <td><input class="cat-label-input" type="text" value="${esc(label)}" maxlength="50" data-key="${esc(key)}"></td>
@@ -635,180 +972,198 @@ function renderCatsTable() {
             <td><button class="btn btn-danger btn-sm" data-del-cat="${esc(key)}">✕</button></td>
         </tr>`).join('');
 
-    wrap.innerHTML = `
+            wrap.innerHTML = `
         <table class="data-table">
             <thead><tr><th>Key</th><th>Label</th><th>Colour</th><th></th></tr></thead>
             <tbody>${rows}</tbody>
         </table>`;
 
-    wrap.querySelectorAll('.cat-label-input').forEach(input => {
-        input.addEventListener('input', () => {
-            if (currentCategories[input.dataset.key]) {
-                currentCategories[input.dataset.key].label = input.value;
-            }
-        });
-    });
+            wrap.querySelectorAll('.cat-label-input').forEach(input => {
+                input.addEventListener('input', () => {
+                    if (currentCategories[input.dataset.key]) {
+                        currentCategories[input.dataset.key].label = input.value;
+                    }
+                });
+            });
 
-    wrap.querySelectorAll('.cat-color-input').forEach(input => {
-        input.addEventListener('input', () => {
-            if (currentCategories[input.dataset.key]) {
-                currentCategories[input.dataset.key].color = input.value;
-            }
-        });
-    });
+            wrap.querySelectorAll('.cat-color-input').forEach(input => {
+                input.addEventListener('input', () => {
+                    if (currentCategories[input.dataset.key]) {
+                        currentCategories[input.dataset.key].color = input.value;
+                    }
+                });
+            });
 
-    wrap.querySelectorAll('[data-del-cat]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const key = btn.dataset.delCat;
-            const inUse = currentWords.filter(w => w.category === key).length;
-            if (inUse > 0 && !confirm(`${inUse} word(s) use the "${key}" category. Delete anyway?`)) return;
-            delete currentCategories[key];
+            wrap.querySelectorAll('[data-del-cat]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const key = btn.dataset.delCat;
+                    const inUse = currentWords.filter(w => w.category === key).length;
+                    if (inUse > 0 && !confirm(`${inUse} word(s) use the "${key}" category. Delete anyway?`)) return;
+                    delete currentCategories[key];
+                    renderCatsTable();
+                    refreshCategorySelect();
+                });
+            });
+        }
+
+        document.getElementById('add-cat-btn').addEventListener('click', () => {
+            const keyInput = document.getElementById('new-cat-key');
+            const labelInput = document.getElementById('new-cat-label');
+            const colorInput = document.getElementById('new-cat-color');
+            const key = keyInput.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            const label = labelInput.value.trim();
+            if (!key || !label) return;
+            if (currentCategories[key]) { alert(`Category key "${key}" already exists.`); return; }
+            currentCategories[key] = { label, color: colorInput.value };
+            keyInput.value = '';
+            labelInput.value = '';
+            colorInput.value = '#cccccc';
             renderCatsTable();
             refreshCategorySelect();
         });
-    });
-}
 
-document.getElementById('add-cat-btn').addEventListener('click', () => {
-    const keyInput = document.getElementById('new-cat-key');
-    const labelInput = document.getElementById('new-cat-label');
-    const colorInput = document.getElementById('new-cat-color');
-    const key = keyInput.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
-    const label = labelInput.value.trim();
-    if (!key || !label) return;
-    if (currentCategories[key]) { alert(`Category key "${key}" already exists.`); return; }
-    currentCategories[key] = { label, color: colorInput.value };
-    keyInput.value = '';
-    labelInput.value = '';
-    colorInput.value = '#cccccc';
-    renderCatsTable();
-    refreshCategorySelect();
-});
+        document.getElementById('save-cats-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('save-cats-btn');
+            btn.dataset.originalLabel = btn.dataset.originalLabel || btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            try {
+                const { ok, data } = await apiFetch('/categories', {
+                    method: 'PUT',
+                    body: JSON.stringify({ categories: currentCategories })
+                });
+                flashBtn(btn, ok ? `✓ Saved ${data.count} categories` : `✗ ${data.error || 'Save failed'}`, !ok);
+            } catch (err) {
+                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
+            } finally {
+                btn.disabled = false;
+            }
+        });
 
-document.getElementById('save-cats-btn').addEventListener('click', async () => {
-    const btn = document.getElementById('save-cats-btn');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
-    const { ok, data } = await apiFetch('/categories', {
-        method: 'PUT',
-        body: JSON.stringify({ categories: currentCategories })
-    });
-    btn.disabled = false;
-    flashBtn(btn, ok ? `✓ Saved ${data.count} categories` : `✗ ${data.error || 'Save failed'}`, !ok);
-});
+        async function loadWords() {
+            const wrap = document.getElementById('words-table-wrap');
+            wrap.innerHTML = '<p class="loading">Loading…</p>';
+            const { ok, data } = await apiFetch('/words');
+            if (!ok) { wrap.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
+            currentWords = data.words || [];
+            renderWordsTable();
+        }
 
-async function loadWords() {
-    const wrap = document.getElementById('words-table-wrap');
-    wrap.innerHTML = '<p class="loading">Loading…</p>';
-    const { ok, data } = await apiFetch('/words');
-    if (!ok) { wrap.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
-    currentWords = data.words || [];
-    renderWordsTable();
-}
+        async function loadDefaultWords() {
+            const res = await fetch('/data/words.json');
+            currentWords = await res.json();
+            renderWordsTable();
+        }
 
-async function loadDefaultWords() {
-    const res = await fetch('/data/words.json');
-    currentWords = await res.json();
-    renderWordsTable();
-}
+        function renderWordsTable() {
+            const wrap = document.getElementById('words-table-wrap');
+            document.getElementById('word-count-display').textContent = `${currentWords.length} words`;
 
-function renderWordsTable() {
-    const wrap = document.getElementById('words-table-wrap');
-    document.getElementById('word-count-display').textContent = `${currentWords.length} words`;
+            if (!currentWords.length) {
+                wrap.innerHTML = '<p class="loading">No words yet. Add one above or load defaults.</p>';
+                return;
+            }
 
-    if (!currentWords.length) {
-        wrap.innerHTML = '<p class="loading">No words yet. Add one above or load defaults.</p>';
-        return;
-    }
-
-    const rows = currentWords.map((w, i) => `
+            const rows = currentWords.map((w, i) => `
         <tr data-index="${i}">
             <td>${esc(w.text)}</td>
             <td>${esc(currentCategories[w.category]?.label || w.category)}</td>
             <td><button class="btn btn-danger btn-sm" data-del="${i}">✕</button></td>
         </tr>`).join('');
 
-    wrap.innerHTML = `
+            wrap.innerHTML = `
         <table class="data-table">
             <thead><tr><th>Word</th><th>Category</th><th></th></tr></thead>
             <tbody>${rows}</tbody>
         </table>`;
 
-    wrap.querySelectorAll('[data-del]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const i = parseInt(btn.dataset.del);
-            currentWords.splice(i, 1);
+            wrap.querySelectorAll('[data-del]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const i = parseInt(btn.dataset.del);
+                    currentWords.splice(i, 1);
+                    renderWordsTable();
+                });
+            });
+        }
+
+        document.getElementById('add-word-btn').addEventListener('click', () => {
+            const text = document.getElementById('new-word-text').value.trim().toUpperCase();
+            const category = document.getElementById('new-word-category').value;
+            if (!text) return;
+            currentWords.push({ text, category });
+            document.getElementById('new-word-text').value = '';
             renderWordsTable();
         });
-    });
-}
 
-document.getElementById('add-word-btn').addEventListener('click', () => {
-    const text = document.getElementById('new-word-text').value.trim().toUpperCase();
-    const category = document.getElementById('new-word-category').value;
-    if (!text) return;
-    currentWords.push({ text, category });
-    document.getElementById('new-word-text').value = '';
-    renderWordsTable();
-});
+        document.getElementById('new-word-text').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); document.getElementById('add-word-btn').click(); }
+        });
 
-document.getElementById('new-word-text').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('add-word-btn').click(); }
-});
+        document.getElementById('load-static-btn').addEventListener('click', async () => {
+            if (!confirm('Replace current list with the bundled defaults?')) return;
+            await loadDefaultWords();
+        });
 
-document.getElementById('load-static-btn').addEventListener('click', async () => {
-    if (!confirm('Replace current list with the bundled defaults?')) return;
-    await loadDefaultWords();
-});
+        document.getElementById('save-words-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('save-words-btn');
+            btn.dataset.originalLabel = btn.dataset.originalLabel || btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            try {
+                const { ok, data } = await apiFetch('/words', {
+                    method: 'PUT',
+                    body: JSON.stringify({ words: currentWords })
+                });
+                flashBtn(btn, ok ? `✓ Saved ${data.count} words` : `✗ ${data.error || 'Save failed'}`, !ok);
+            } catch (err) {
+                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
+            } finally {
+                btn.disabled = false;
+            }
+        });
 
-document.getElementById('save-words-btn').addEventListener('click', async () => {
-    const btn = document.getElementById('save-words-btn');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
-    const { ok, data } = await apiFetch('/words', {
-        method: 'PUT',
-        body: JSON.stringify({ words: currentWords })
-    });
-    btn.disabled = false;
-    flashBtn(btn, ok ? `✓ Saved ${data.count} words` : `✗ ${data.error || 'Save failed'}`, !ok);
-});
+        // ── Settings ──────────────────────────────────────────────────────────────────
 
-// ── Settings ──────────────────────────────────────────────────────────────────
+        async function loadSettings() {
+            const { ok, data } = await apiFetch('/settings');
+            if (!ok) return;
+            if (data.tagline !== undefined) document.getElementById('setting-tagline').value = data.tagline;
+            if (data.about !== undefined) document.getElementById('setting-about').value = data.about;
+        }
 
-async function loadSettings() {
-    const { ok, data } = await apiFetch('/settings');
-    if (!ok) return;
-    if (data.tagline !== undefined) document.getElementById('setting-tagline').value = data.tagline;
-    if (data.about !== undefined) document.getElementById('setting-about').value = data.about;
-}
+        document.getElementById('save-settings-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('save-settings-btn');
+            btn.dataset.originalLabel = btn.dataset.originalLabel || btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            try {
+                const { ok, data } = await apiFetch('/settings', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        tagline: document.getElementById('setting-tagline').value,
+                        about: document.getElementById('setting-about').value
+                    })
+                });
+                flashBtn(btn, ok ? '✓ Settings saved' : `✗ ${data.error || 'Save failed'}`, !ok);
+            } catch (err) {
+                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
+            } finally {
+                btn.disabled = false;
+            }
+        });
 
-document.getElementById('save-settings-btn').addEventListener('click', async () => {
-    const btn = document.getElementById('save-settings-btn');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
-    const { ok, data } = await apiFetch('/settings', {
-        method: 'PUT',
-        body: JSON.stringify({
-            tagline: document.getElementById('setting-tagline').value,
-            about: document.getElementById('setting-about').value
-        })
-    });
-    btn.disabled = false;
-    flashBtn(btn, ok ? '✓ Settings saved' : `✗ ${data.error || 'Save failed'}`, !ok);
-});
+        // ── Users ─────────────────────────────────────────────────────────────────────
 
-// ── Users ─────────────────────────────────────────────────────────────────────
+        async function loadUsers() {
+            const el = document.getElementById('users-content');
+            el.innerHTML = '<p class="loading">Loading…</p>';
+            const { ok, data } = await apiFetch('/users');
+            if (!ok) { el.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
 
-async function loadUsers() {
-    const el = document.getElementById('users-content');
-    el.innerHTML = '<p class="loading">Loading…</p>';
-    const { ok, data } = await apiFetch('/users');
-    if (!ok) { el.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
+            const users = data.users;
+            if (!users.length) { el.innerHTML = '<p class="loading">No users found.</p>'; return; }
 
-    const users = data.users;
-    if (!users.length) { el.innerHTML = '<p class="loading">No users found.</p>'; return; }
-
-    const rows = users.map(u => `
+            const rows = users.map(u => `
         <tr>
             <td>${esc(u)}${u === currentUsername ? ' <span style="color:var(--text-dim);font-size:0.8rem">(you)</span>' : ''}</td>
             <td style="display:flex;gap:0.5rem;padding:0.5rem 0.9rem">
@@ -818,7 +1173,7 @@ async function loadUsers() {
             </td>
         </tr>`).join('');
 
-    el.innerHTML = `
+            el.innerHTML = `
         <div class="table-wrap">
             <table class="data-table">
                 <thead><tr><th>Username</th><th>Actions</th></tr></thead>
@@ -826,103 +1181,104 @@ async function loadUsers() {
             </table>
         </div>`;
 
-    el.querySelectorAll('[data-setpw]').forEach(btn => {
-        btn.addEventListener('click', () => openSetPw(btn.dataset.setpw));
-    });
-    el.querySelectorAll('[data-del-user]').forEach(btn => {
-        btn.addEventListener('click', () => deleteUser(btn.dataset.delUser));
-    });
-}
+            el.querySelectorAll('[data-setpw]').forEach(btn => {
+                btn.addEventListener('click', () => openSetPw(btn.dataset.setpw));
+            });
+            el.querySelectorAll('[data-del-user]').forEach(btn => {
+                btn.addEventListener('click', () => deleteUser(btn.dataset.delUser));
+            });
+        }
 
-function openSetPw(username) {
-    pendingSetPwTarget = username;
-    document.getElementById('setpw-target-name').textContent = username;
-    document.getElementById('setpw-input').value = '';
-    document.getElementById('setpw-error').style.display = 'none';
-    document.getElementById('setpw-overlay').classList.add('visible');
-    setTimeout(() => document.getElementById('setpw-input').focus(), 50);
-}
+        function openSetPw(username) {
+            pendingSetPwTarget = username;
+            document.getElementById('setpw-target-name').textContent = username;
+            document.getElementById('setpw-input').value = '';
+            document.getElementById('setpw-error').style.display = 'none';
+            document.getElementById('setpw-overlay').classList.add('visible');
+            setTimeout(() => document.getElementById('setpw-input').focus(), 50);
+        }
 
-document.getElementById('setpw-cancel').addEventListener('click', () => {
-    document.getElementById('setpw-overlay').classList.remove('visible');
-    pendingSetPwTarget = null;
-});
+        document.getElementById('setpw-cancel').addEventListener('click', () => {
+            document.getElementById('setpw-overlay').classList.remove('visible');
+            pendingSetPwTarget = null;
+        });
 
-document.getElementById('setpw-confirm').addEventListener('click', async () => {
-    const pw = document.getElementById('setpw-input').value;
-    const errEl = document.getElementById('setpw-error');
-    if (pw.length < 8) {
-        errEl.textContent = 'Password must be at least 8 characters';
-        errEl.style.display = 'block';
-        return;
-    }
-    const btn = document.getElementById('setpw-confirm');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
-    const { ok, data } = await apiFetch(`/users/${encodeURIComponent(pendingSetPwTarget)}`, {
-        method: 'PUT',
-        body: JSON.stringify({ password: pw })
-    });
-    btn.disabled = false;
-    btn.textContent = 'Set password';
-    if (ok) {
-        document.getElementById('setpw-overlay').classList.remove('visible');
-        pendingSetPwTarget = null;
-    } else {
-        errEl.textContent = data.error || 'Failed to set password';
-        errEl.style.display = 'block';
-    }
-});
+        document.getElementById('setpw-confirm').addEventListener('click', async () => {
+            const pw = document.getElementById('setpw-input').value;
+            const errEl = document.getElementById('setpw-error');
+            if (pw.length < 8) {
+                errEl.textContent = 'Password must be at least 8 characters';
+                errEl.style.display = 'block';
+                return;
+            }
+            const btn = document.getElementById('setpw-confirm');
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            const { ok, data } = await apiFetch(`/users/${encodeURIComponent(pendingSetPwTarget)}`, {
+                method: 'PUT',
+                body: JSON.stringify({ password: pw })
+            });
+            btn.disabled = false;
+            btn.textContent = 'Set password';
+            if (ok) {
+                document.getElementById('setpw-overlay').classList.remove('visible');
+                pendingSetPwTarget = null;
+            } else {
+                errEl.textContent = data.error || 'Failed to set password';
+                errEl.style.display = 'block';
+            }
+        });
 
-async function deleteUser(username) {
-    if (!confirm(`Delete admin "${username}"? This cannot be undone.`)) return;
-    const { ok, data } = await apiFetch(`/users/${encodeURIComponent(username)}`, { method: 'DELETE' });
-    if (ok) {
-        loadUsers();
-    } else {
-        alert('Delete failed: ' + (data.error || 'unknown error'));
-    }
-}
+        async function deleteUser(username) {
+            if (!confirm(`Delete admin "${username}"? This cannot be undone.`)) return;
+            const { ok, data } = await apiFetch(`/users/${encodeURIComponent(username)}`, { method: 'DELETE' });
+            if (ok) {
+                loadUsers();
+            } else {
+                alert('Delete failed: ' + (data.error || 'unknown error'));
+            }
+        }
 
-document.getElementById('add-admin-btn').addEventListener('click', async () => {
-    const usernameVal = document.getElementById('new-admin-username').value.trim();
-    const password = document.getElementById('new-admin-password').value;
-    const errEl = document.getElementById('add-admin-error');
-    errEl.style.display = 'none';
-    if (!usernameVal) { errEl.textContent = 'Username is required'; errEl.style.display = 'block'; return; }
-    if (password.length < 8) { errEl.textContent = 'Password must be at least 8 characters'; errEl.style.display = 'block'; return; }
-    const btn = document.getElementById('add-admin-btn');
-    btn.disabled = true;
-    btn.textContent = 'Adding…';
-    const { ok, data } = await apiFetch('/users', {
-        method: 'POST',
-        body: JSON.stringify({ username: usernameVal, password })
-    });
-    btn.disabled = false;
-    btn.textContent = 'Add admin';
-    if (ok) {
-        document.getElementById('new-admin-username').value = '';
-        document.getElementById('new-admin-password').value = '';
-        loadUsers();
-    } else {
-        errEl.textContent = data.error || 'Failed to add admin';
-        errEl.style.display = 'block';
-    }
-});
+        document.getElementById('add-admin-btn').addEventListener('click', async () => {
+            const usernameVal = document.getElementById('new-admin-username').value.trim();
+            const password = document.getElementById('new-admin-password').value;
+            const errEl = document.getElementById('add-admin-error');
+            errEl.style.display = 'none';
+            if (!usernameVal) { errEl.textContent = 'Username is required'; errEl.style.display = 'block'; return; }
+            if (password.length < 8) { errEl.textContent = 'Password must be at least 8 characters'; errEl.style.display = 'block'; return; }
+            const btn = document.getElementById('add-admin-btn');
+            btn.disabled = true;
+            btn.textContent = 'Adding…';
+            const { ok, data } = await apiFetch('/users', {
+                method: 'POST',
+                body: JSON.stringify({ username: usernameVal, password })
+            });
+            btn.disabled = false;
+            btn.textContent = 'Add admin';
+            if (ok) {
+                document.getElementById('new-admin-username').value = '';
+                document.getElementById('new-admin-password').value = '';
+                loadUsers();
+            } else {
+                errEl.textContent = data.error || 'Failed to add admin';
+                errEl.style.display = 'block';
+            }
+        });
 
-// ── Escape HTML ───────────────────────────────────────────────────────────────
+        // ── Escape HTML ───────────────────────────────────────────────────────────────
 
-function esc(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+        function esc(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
+        // ── Boot ──────────────────────────────────────────────────────────────────────
 
-(async () => {
-    if (await checkAuth()) {
-        showAdmin();
-    }
-})();
-</script>
+        (async () => {
+            if (await checkAuth()) {
+                showAdmin();
+            }
+        })();
+    </script>
 </body>
+
 </html>
