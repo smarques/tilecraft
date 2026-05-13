@@ -294,6 +294,7 @@
             <button class="nav-btn active" data-tab="scores">Scores</button>
             <button class="nav-btn" data-tab="words">Words</button>
             <button class="nav-btn" data-tab="settings">Settings</button>
+            <button class="nav-btn" data-tab="users">Users</button>
         </nav>
         <button class="btn btn-secondary btn-sm" id="logout-btn">Logout</button>
     </header>
@@ -349,6 +350,24 @@
             </div>
         </div>
 
+        <!-- Users tab -->
+        <div class="tab" id="tab-users">
+            <h2 class="tab-title">Admin Users</h2>
+            <p class="tab-desc">Manage admin accounts. You cannot delete your own account or the last remaining admin.</p>
+
+            <div class="settings-group">
+                <label>New Admin</label>
+                <div class="words-toolbar" style="margin-bottom:0.4rem">
+                    <input type="text" id="new-admin-username" placeholder="Username" maxlength="50" style="max-width:200px">
+                    <input type="password" id="new-admin-password" placeholder="Password (min 8 chars)" style="flex:1">
+                    <button class="btn btn-secondary" id="add-admin-btn">Add admin</button>
+                </div>
+                <p id="add-admin-error" class="settings-hint" style="color:var(--danger);display:none"></p>
+            </div>
+
+            <div id="users-content"><p class="loading">Loading…</p></div>
+        </div>
+
         <!-- Settings tab -->
         <div class="tab" id="tab-settings">
             <h2 class="tab-title">Settings</h2>
@@ -385,10 +404,28 @@
     </div>
 </div>
 
+<!-- Set password overlay -->
+<div class="overlay" id="setpw-overlay">
+    <div class="dialog">
+        <h3>Set password for <span id="setpw-target-name"></span></h3>
+        <div class="field" style="margin:1rem 0 0.5rem">
+            <label for="setpw-input">New password</label>
+            <input type="password" id="setpw-input" placeholder="Min 8 characters" autocomplete="new-password">
+        </div>
+        <p id="setpw-error" style="color:var(--danger);font-size:0.85rem;margin-bottom:1rem;display:none"></p>
+        <div class="dialog-actions">
+            <button class="btn btn-secondary" id="setpw-cancel">Cancel</button>
+            <button class="btn btn-primary" id="setpw-confirm" style="width:auto">Set password</button>
+        </div>
+    </div>
+</div>
+
 <script>
 const API = '/api/admin';
 let currentWords = [];
 let pendingDeleteId = null;
+let currentUsername = null;
+let pendingSetPwTarget = null;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -424,7 +461,8 @@ function flashBtn(btn, msg, isErr) {
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 async function checkAuth() {
-    const { ok } = await apiFetch('/me');
+    const { ok, data } = await apiFetch('/me');
+    if (ok) currentUsername = data.username;
     return ok;
 }
 
@@ -470,6 +508,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         document.getElementById('tab-' + tab).classList.add('active');
         if (tab === 'words') { if (currentWords.length === 0) loadWords(); renderCatsTable(); }
         if (tab === 'settings') loadSettings();
+        if (tab === 'users') loadUsers();
     });
 });
 
@@ -753,6 +792,119 @@ document.getElementById('save-settings-btn').addEventListener('click', async () 
     });
     btn.disabled = false;
     flashBtn(btn, ok ? '✓ Settings saved' : `✗ ${data.error || 'Save failed'}`, !ok);
+});
+
+// ── Users ─────────────────────────────────────────────────────────────────────
+
+async function loadUsers() {
+    const el = document.getElementById('users-content');
+    el.innerHTML = '<p class="loading">Loading…</p>';
+    const { ok, data } = await apiFetch('/users');
+    if (!ok) { el.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
+
+    const users = data.users;
+    if (!users.length) { el.innerHTML = '<p class="loading">No users found.</p>'; return; }
+
+    const rows = users.map(u => `
+        <tr>
+            <td>${esc(u)}${u === currentUsername ? ' <span style="color:var(--text-dim);font-size:0.8rem">(you)</span>' : ''}</td>
+            <td style="display:flex;gap:0.5rem;padding:0.5rem 0.9rem">
+                <button class="btn btn-secondary btn-sm" data-setpw="${esc(u)}">Set password</button>
+                <button class="btn btn-danger btn-sm" data-del-user="${esc(u)}"
+                    ${u === currentUsername ? 'disabled title="Cannot delete your own account"' : ''}>Delete</button>
+            </td>
+        </tr>`).join('');
+
+    el.innerHTML = `
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Username</th><th>Actions</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+
+    el.querySelectorAll('[data-setpw]').forEach(btn => {
+        btn.addEventListener('click', () => openSetPw(btn.dataset.setpw));
+    });
+    el.querySelectorAll('[data-del-user]').forEach(btn => {
+        btn.addEventListener('click', () => deleteUser(btn.dataset.delUser));
+    });
+}
+
+function openSetPw(username) {
+    pendingSetPwTarget = username;
+    document.getElementById('setpw-target-name').textContent = username;
+    document.getElementById('setpw-input').value = '';
+    document.getElementById('setpw-error').style.display = 'none';
+    document.getElementById('setpw-overlay').classList.add('visible');
+    setTimeout(() => document.getElementById('setpw-input').focus(), 50);
+}
+
+document.getElementById('setpw-cancel').addEventListener('click', () => {
+    document.getElementById('setpw-overlay').classList.remove('visible');
+    pendingSetPwTarget = null;
+});
+
+document.getElementById('setpw-confirm').addEventListener('click', async () => {
+    const pw = document.getElementById('setpw-input').value;
+    const errEl = document.getElementById('setpw-error');
+    if (pw.length < 8) {
+        errEl.textContent = 'Password must be at least 8 characters';
+        errEl.style.display = 'block';
+        return;
+    }
+    const btn = document.getElementById('setpw-confirm');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    const { ok, data } = await apiFetch(`/users/${encodeURIComponent(pendingSetPwTarget)}`, {
+        method: 'PUT',
+        body: JSON.stringify({ password: pw })
+    });
+    btn.disabled = false;
+    btn.textContent = 'Set password';
+    if (ok) {
+        document.getElementById('setpw-overlay').classList.remove('visible');
+        pendingSetPwTarget = null;
+    } else {
+        errEl.textContent = data.error || 'Failed to set password';
+        errEl.style.display = 'block';
+    }
+});
+
+async function deleteUser(username) {
+    if (!confirm(`Delete admin "${username}"? This cannot be undone.`)) return;
+    const { ok, data } = await apiFetch(`/users/${encodeURIComponent(username)}`, { method: 'DELETE' });
+    if (ok) {
+        loadUsers();
+    } else {
+        alert('Delete failed: ' + (data.error || 'unknown error'));
+    }
+}
+
+document.getElementById('add-admin-btn').addEventListener('click', async () => {
+    const usernameVal = document.getElementById('new-admin-username').value.trim();
+    const password = document.getElementById('new-admin-password').value;
+    const errEl = document.getElementById('add-admin-error');
+    errEl.style.display = 'none';
+    if (!usernameVal) { errEl.textContent = 'Username is required'; errEl.style.display = 'block'; return; }
+    if (password.length < 8) { errEl.textContent = 'Password must be at least 8 characters'; errEl.style.display = 'block'; return; }
+    const btn = document.getElementById('add-admin-btn');
+    btn.disabled = true;
+    btn.textContent = 'Adding…';
+    const { ok, data } = await apiFetch('/users', {
+        method: 'POST',
+        body: JSON.stringify({ username: usernameVal, password })
+    });
+    btn.disabled = false;
+    btn.textContent = 'Add admin';
+    if (ok) {
+        document.getElementById('new-admin-username').value = '';
+        document.getElementById('new-admin-password').value = '';
+        loadUsers();
+    } else {
+        errEl.textContent = data.error || 'Failed to add admin';
+        errEl.style.display = 'block';
+    }
 });
 
 // ── Escape HTML ───────────────────────────────────────────────────────────────

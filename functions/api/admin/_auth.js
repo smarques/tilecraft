@@ -30,9 +30,9 @@ export async function requireAuth(request, env) {
     if (!match) return null;
     const token = match[1];
     const row = await env.DB.prepare(
-        `SELECT token FROM admin_sessions WHERE token = ? AND expires_at > datetime('now')`
+        `SELECT token, username FROM admin_sessions WHERE token = ? AND expires_at > datetime('now')`
     ).bind(token).first();
-    return row ? token : null;
+    return row ? { token: row.token, username: row.username } : null;
 }
 
 export function sessionCookie(token, expires) {
