@@ -14,6 +14,12 @@
 </head>
 
 <body>
+    <div id="setup-notice" class="setup-notice hidden" data-html2canvas-ignore="true">
+        <span data-i18n="setupNotice.message">This game is using default content — visit</span>
+        <a href="/admin/" data-i18n="setupNotice.link">Admin</a>
+        <span data-i18n="setupNotice.suffix">to finish setting up.</span>
+    </div>
+
     <div class="app-container">
         <div class="stats-container" data-html2canvas-ignore="true">
             <div class="moves-display"><span data-i18n="stats.moves">Moves: </span><span id="moves-count">0</span></div>
@@ -99,6 +105,7 @@
             <li><button id="menu-play" class="menu-item" data-i18n="menu.play">Play</button></li>
             <li><button id="menu-highscore" class="menu-item" data-i18n="menu.highScore">High Scores</button></li>
             <li><button id="menu-about" class="menu-item" data-i18n="menu.about">About</button></li>
+            <li><a href="/admin/" class="menu-item menu-item-admin" data-i18n="menu.admin">Admin</a></li>
         </ul>
     </nav>
 

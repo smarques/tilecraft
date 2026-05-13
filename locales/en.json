@@ -42,10 +42,16 @@
     "message": "You have already made moves and/or highlights. Reshuffling will restart the game and all selections will be lost.",
     "confirmBtn": "Restart"
   },
+  "setupNotice": {
+    "message": "This game is using default content — visit",
+    "link": "Admin",
+    "suffix": "to finish setting up."
+  },
   "menu": {
     "play": "Play",
     "highScore": "High Scores",
-    "about": "About"
+    "about": "About",
+    "admin": "Admin"
   },
   "highScores": {
     "title": "High Scores",

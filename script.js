@@ -374,6 +374,9 @@ playerNameInput.addEventListener('keydown', (e) => {
 
 // Initialize on page load after translations are ready
 document.addEventListener('i18n:ready', () => {
+    if (window.usingDefaultContent) {
+        document.getElementById('setup-notice').classList.remove('hidden');
+    }
     initGame();
     boardElement.style.pointerEvents = 'none';
 }, { once: true });

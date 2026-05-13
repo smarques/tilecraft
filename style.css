@@ -31,6 +31,28 @@ body {
     background-image: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.03) 100%);
 }
 
+.setup-notice {
+    width: 100%;
+    padding: 0.6rem 1.25rem;
+    background: #fffbeb;
+    border-bottom: 1px solid #fcd34d;
+    color: #92400e;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    display: flex;
+    gap: 0.35em;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.setup-notice a {
+    color: #b45309;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
 .app-container {
     display: flex;
     flex-direction: column;
@@ -581,6 +603,11 @@ button:disabled {
     background: rgba(0, 0, 0, 0.08);
     transform: none;
     box-shadow: none;
+}
+
+a.menu-item {
+    display: block;
+    text-decoration: none;
 }
 
 /* --- High Scores Page --- */
