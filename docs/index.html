@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tilecraft — A word puzzle for collective sense-making</title>
+  <meta name="description" content="Open-source sliding tile puzzle for participatory workshops. Run your own white-label copy on Cloudflare for free.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #f5f2eb;
+      --bg-card:  #e8e4db;
+      --bg-deep:  #dcd8cf;
+      --text:     #3a3836;
+      --muted:    #7a7571;
+      --accent:   #c97a7e;
+      --green:    #0c9c67;
+      --gold:     #b09060;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      background-image: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.025) 100%);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(245, 242, 235, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .nav-logo {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav-links { display: flex; gap: 1rem; align-items: center; }
+
+    .nav-gh {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-gh:hover { color: var(--text); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      border-radius: 99px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 3px 12px rgba(201, 122, 126, 0.35);
+    }
+    .btn-accent:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 122, 126, 0.45);
+    }
+
+    .btn-neutral {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow:
+        0 2px 6px rgba(0,0,0,0.06),
+        inset 1px 1px 3px rgba(255,255,255,0.9),
+        inset -1px -1px 2px rgba(0,0,0,0.05);
+    }
+    .btn-neutral:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 6px 16px rgba(0,0,0,0.09),
+        inset 1px 1px 3px rgba(255,255,255,0.9),
+        inset -1px -1px 2px rgba(0,0,0,0.05);
+    }
+
+    .btn-lg { padding: 0.85rem 2.2rem; font-size: 1rem; }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .section-pad { padding: 6rem 0; }
+
+    .full-bleed {
+      background: var(--bg-card);
+      border-top: 1px solid rgba(255,255,255,0.72);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* ── LABELS ── */
+    .label {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.9rem;
+    }
+
+    h2.section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text);
+      text-shadow: 1px 2px 0 rgba(255,255,255,0.8);
+      margin-bottom: 1rem;
+    }
+
+    .section-lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 58ch;
+      line-height: 1.75;
+      margin-bottom: 3rem;
+    }
+
+    /* ── HERO ── */
+    .hero-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      padding: 7rem 0 6rem;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--bg-deep);
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border-radius: 99px;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .hero-h1 {
+      font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      text-shadow: 1px 2px 0 rgba(255,255,255,0.8);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-h1 em { color: var(--accent); font-style: normal; }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 46ch;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+
+    /* ── MINI TILE BOARD ── */
+    .board-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mini-board {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      background: #dcd8cf;
+      border-radius: 14px;
+      padding: 9px;
+      box-shadow:
+        inset 3px 3px 8px rgba(0,0,0,0.12),
+        inset -3px -3px 8px rgba(255,255,255,0.55),
+        0 24px 48px -8px rgba(0,0,0,0.14),
+        0 8px 16px -4px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.55);
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1;
+      animation: board-float 5s ease-in-out infinite;
+    }
+
+    @keyframes board-float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .t {
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: clamp(0.42rem, 1.7vw, 0.68rem);
+      font-weight: 800;
+      text-transform: lowercase;
+      text-align: center;
+      letter-spacing: 0.01em;
+      padding: 2px;
+      background-image: linear-gradient(135deg, rgba(255,255,255,0.48) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.06) 100%);
+      box-shadow:
+        inset 1px 1px 2px rgba(255,255,255,0.9),
+        inset -1px -1px 3px rgba(0,0,0,0.12),
+        1px 2px 3px rgba(0,0,0,0.18),
+        0 1px 1px rgba(0,0,0,0.08);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 -1px 1px rgba(0,0,0,0.2);
+      color: white;
+      transition: opacity 0.3s ease;
+    }
+
+    .t.empty {
+      background: transparent;
+      background-image: none;
+      box-shadow: none;
+    }
+
+    /* tile category colors */
+    .ca { background-color: #c97a7e; }
+    .cb { background-color: #b09060; }
+    .cc { background-color: #c4b49a; color: #5a4a3a; text-shadow: 0 1px 1px rgba(255,255,255,0.5); }
+    .cd { background-color: #8aab90; }
+
+    /* selected tiles */
+    .t.sel {
+      border: 2px solid #0c9c67;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.7),
+        inset 1px 1px 2px rgba(255,255,255,0.9),
+        inset -1px -1px 3px rgba(0,0,0,0.1),
+        1px 2px 3px rgba(0,0,0,0.12),
+        0 0 12px rgba(12, 156, 103, 0.3),
+        0 0 24px rgba(255,255,255,0.35);
+      animation: sel-pulse 2.8s ease-in-out infinite;
+    }
+
+    @keyframes sel-pulse {
+      0%, 100% {
+        box-shadow:
+          inset 0 0 0 1px rgba(255,255,255,0.7),
+          inset 1px 1px 2px rgba(255,255,255,0.9),
+          inset -1px -1px 3px rgba(0,0,0,0.1),
+          1px 2px 3px rgba(0,0,0,0.12),
+          0 0 10px rgba(12, 156, 103, 0.25),
+          0 0 20px rgba(255,255,255,0.3);
+      }
+      50% {
+        box-shadow:
+          inset 0 0 0 1px rgba(255,255,255,0.7),
+          inset 1px 1px 2px rgba(255,255,255,0.9),
+          inset -1px -1px 3px rgba(0,0,0,0.1),
+          1px 2px 3px rgba(0,0,0,0.12),
+          0 0 18px rgba(12, 156, 103, 0.45),
+          0 0 36px rgba(255,255,255,0.55);
+      }
+    }
+
+    /* dim non-selected tiles in selection mode */
+    .has-selection .t:not(.sel):not(.empty) { opacity: 0.32; }
+
+    /* ── HOW IT WORKS ── */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .step-card {
+      background: var(--bg);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.75);
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.05),
+        inset 1px 1px 3px rgba(255,255,255,0.9),
+        inset -1px -1px 2px rgba(0,0,0,0.04);
+    }
+
+    .step-num {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent);
+      opacity: 0.2;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .step-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+
+    .step-card p {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .step-card strong { color: var(--text); font-weight: 700; }
+
+    /* ── FOR FACILITATORS ── */
+    .facil-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .facil-body p {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.82;
+      margin-bottom: 1.1rem;
+    }
+
+    .facil-body p em { color: var(--text); font-style: italic; }
+
+    .pullquote {
+      margin-top: 2rem;
+      padding: 1.25rem 1.5rem;
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      background: var(--bg-deep);
+      font-size: 0.97rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.78;
+    }
+
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .feature-list li {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      font-size: 0.93rem;
+      color: var(--muted);
+      line-height: 1.68;
+    }
+
+    .feature-list li::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 0.52rem;
+    }
+
+    /* ── WHITE LABEL / DEPLOY ── */
+    .wl-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 4.5rem;
+    }
+
+    .wl-card {
+      background: var(--bg);
+      border-radius: 14px;
+      padding: 1.75rem;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .wl-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .wl-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .wl-card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.68;
+    }
+
+    /* deploy steps */
+    .deploy-heading {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+      margin-bottom: 0.4rem;
+    }
+
+    .deploy-sub {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .deploy-steps {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .deploy-step {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+      padding: 1.75rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+
+    .deploy-step:last-child { border-bottom: none; }
+
+    .step-circle {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(201,122,126,0.35);
+    }
+
+    .step-body h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .step-body p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.68;
+    }
+
+    .step-body a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .step-body a:hover { text-decoration: underline; }
+
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82em;
+      background: rgba(0,0,0,0.07);
+      padding: 0.12em 0.4em;
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg-card);
+      border-top: 1px solid rgba(0,0,0,0.07);
+      padding: 2.5rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .footer-brand {
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .footer-links {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .footer-links a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .footer-links a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 820px) {
+      .hero-wrap {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        padding: 5rem 0 4rem;
+      }
+
+      .mini-board { max-width: 320px; }
+
+      .facil-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .facil-grid .feature-list { margin-top: 0 !important; }
+    }
+
+    @media (max-width: 480px) {
+      nav { padding: 0.85rem 1.25rem; }
+      .container { padding: 0 1.25rem; }
+      .section-pad { padding: 4rem 0; }
+      .hero-wrap { padding: 4rem 0 3rem; }
+      .nav-gh { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">Tilecraft</span>
+  <div class="nav-links">
+    <a href="https://github.com/smarques/tilecraft" class="nav-gh" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://tilecraft-game.pages.dev/" class="btn btn-accent" target="_blank" rel="noopener">Try the demo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+  <div class="hero-wrap">
+
+    <div>
+      <span class="hero-badge">Open-source facilitation tool</span>
+      <h1 class="hero-h1">A word puzzle for <em>collective sense-making</em></h1>
+      <p class="hero-sub">Tilecraft turns language into a shared material. Facilitators curate the vocabulary; participants slide, arrange, and connect word tiles — then write the insight that emerges.</p>
+      <div class="hero-actions">
+        <a href="https://tilecraft-game.pages.dev/" target="_blank" rel="noopener" class="btn btn-accent btn-lg">Try the demo</a>
+        <a href="#deploy" class="btn btn-neutral btn-lg">Get your own copy</a>
+      </div>
+    </div>
+
+    <div class="board-wrap">
+      <div class="mini-board has-selection" aria-hidden="true">
+        <!-- Row 1 -->
+        <div class="t cd">voice</div>
+        <div class="t ca sel">space</div>
+        <div class="t ca sel">frame</div>
+        <div class="t cb">bridge</div>
+        <div class="t cc">listen</div>
+        <div class="t cc">craft</div>
+        <!-- Row 2 -->
+        <div class="t cb sel">weave</div>
+        <div class="t cd sel">trust</div>
+        <div class="t cc">hold</div>
+        <div class="t empty"></div>
+        <div class="t cc">draw</div>
+        <div class="t cd">share</div>
+        <!-- Row 3 -->
+        <div class="t cb">map</div>
+        <div class="t cb">link</div>
+        <div class="t cc">build</div>
+        <div class="t ca">shift</div>
+        <div class="t cd">open</div>
+        <div class="t ca">move</div>
+        <!-- Row 4 -->
+        <div class="t cc">trace</div>
+        <div class="t ca">form</div>
+        <div class="t cd">ground</div>
+        <div class="t cd">name</div>
+        <div class="t cb">seek</div>
+        <div class="t cb">join</div>
+        <!-- Row 5 -->
+        <div class="t cd">mark</div>
+        <div class="t cc">guide</div>
+        <div class="t ca">blend</div>
+        <div class="t cc">shape</div>
+        <div class="t ca">break</div>
+        <div class="t cd">make</div>
+        <!-- Row 6 -->
+        <div class="t cb">view</div>
+        <div class="t cc">read</div>
+        <div class="t cd">sense</div>
+        <div class="t ca">field</div>
+        <div class="t cb">place</div>
+        <div class="t cd">keep</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="full-bleed">
+  <div class="container section-pad">
+    <div class="label">How it works</div>
+    <h2 class="section-title">Three acts, one conversation</h2>
+    <p class="section-lead">A Tilecraft session unfolds in three linked phases, taking participants from vocabulary to articulation.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <h3>Curate the vocabulary</h3>
+        <p>Before the session, the facilitator populates the 35-tile board with words chosen to reflect the session's theme — the terms, tensions, and questions the group needs to navigate. Selecting the words is already an interpretive act.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <h3>Slide and connect</h3>
+        <p>Participants work in two modes. In <strong>Move mode</strong> they rearrange tiles within the constraints of the sliding puzzle. In <strong>Highlight mode</strong> they select a contiguous group — a phrase, a juxtaposition, a cluster — that feels meaningful.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <h3>Write the insight</h3>
+        <p>To save a selection, participants write a statement of at least 30 words explaining why those words belong together. The game captures a board screenshot and publishes the statement to the shared leaderboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR FACILITATORS -->
+<div class="container section-pad">
+  <div class="facil-grid">
+    <div class="facil-body">
+      <div class="label">For facilitators</div>
+      <h2 class="section-title">Productive constraint as method</h2>
+      <p>Brainstorming tools tend to privilege speed and verbal fluency. Tilecraft offers a different entry point: a slow, embodied engagement with language, mediated through the constraints of a sliding puzzle.</p>
+      <p>The contiguity rule — selected tiles must form a physically connected group on the grid — is the key mechanic. You cannot reach across the board and cherry-pick unrelated terms. Your phrase must cohere as <em>a neighbourhood on the grid</em>. This forces participants to work with proximity, to discover connections they might not have sought deliberately.</p>
+      <div class="pullquote">
+        "When ideas are expressed through tile arrangements rather than direct verbal statements, participants feel freer to take interpretive risks, to express ambivalence, or to articulate positions they are not yet certain of."
+      </div>
+    </div>
+    <div>
+      <ul class="feature-list" style="margin-top: 4.5rem;">
+        <li>The word set frames the conceptual landscape before a single tile moves — making curation a design act, not an afterthought</li>
+        <li>Saved statements become citable artefacts: each leaderboard entry is an authored contribution to a shared record of how the group is thinking</li>
+        <li>The puzzle occupies the analytic mind, making room for associative and lateral thinking</li>
+        <li>A 30-word minimum on statements is a gentle insistence on reflection — a nudge against superficial responses</li>
+        <li>The leaderboard, visible to all participants, creates a social incentive to engage thoughtfully</li>
+        <li>Screenshots are automatically generated and downloadable — ready for reports, presentations, or further discussion</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- WHITE LABEL + DEPLOY -->
+<section class="full-bleed" id="deploy">
+  <div class="container section-pad">
+    <div class="label">White label</div>
+    <h2 class="section-title">Your own copy, running free</h2>
+    <p class="section-lead">Tilecraft is open source and designed to be deployed by anyone running participatory projects. Cloudflare's free tier covers typical workshop usage comfortably — most facilitators will never pay a cent.</p>
+
+    <div class="wl-cards">
+      <div class="wl-card">
+        <div class="wl-label">Vocabulary</div>
+        <h3>Custom word list</h3>
+        <p>Upload your own words and categories through the admin panel. No code changes needed. Each deployment carries a completely different conceptual vocabulary — tailored to your session's theme.</p>
+      </div>
+      <div class="wl-card">
+        <div class="wl-label">Identity</div>
+        <h3>Custom tagline &amp; about</h3>
+        <p>Set your own header tagline and write an About page in Markdown — both editable live from the admin panel, with no redeployment required.</p>
+      </div>
+      <div class="wl-card">
+        <div class="wl-label">Cost</div>
+        <h3>Free on Cloudflare</h3>
+        <p>Cloudflare Pages hosts the static front-end at no cost. D1 — SQLite at the edge — stores sessions and leaderboard data. The free tier covers millions of rows and thousands of daily reads with ease.</p>
+      </div>
+      <div class="wl-card">
+        <div class="wl-label">Access</div>
+        <h3>Multi-admin</h3>
+        <p>Create accounts for co-facilitators from the Users tab. Passwords are hashed with PBKDF2-SHA256; sessions are HttpOnly and SameSite=Strict. Deleting an admin immediately invalidates all their active sessions.</p>
+      </div>
+    </div>
+
+    <p class="deploy-heading">Four steps to your own instance</p>
+    <p class="deploy-sub">No build pipeline. No framework. No ongoing hosting cost.</p>
+
+    <div class="deploy-steps">
+      <div class="deploy-step">
+        <div class="step-circle">1</div>
+        <div class="step-body">
+          <h4>Fork the repository</h4>
+          <p>Fork <a href="https://github.com/smarques/tilecraft" target="_blank" rel="noopener">smarques/tilecraft</a> on GitHub. It is plain HTML, CSS, and JavaScript — no build step, no bundler, nothing to install for production.</p>
+        </div>
+      </div>
+      <div class="deploy-step">
+        <div class="step-circle">2</div>
+        <div class="step-body">
+          <h4>Create a Cloudflare D1 database</h4>
+          <p>Run <code>npx wrangler d1 create tilecraft-db</code>, paste the returned <code>database_id</code> into <code>wrangler.toml</code>, then apply the schema: <code>npx wrangler d1 execute tilecraft-db --file=functions/schema.sql</code></p>
+        </div>
+      </div>
+      <div class="deploy-step">
+        <div class="step-circle">3</div>
+        <div class="step-body">
+          <h4>Deploy to Cloudflare Pages</h4>
+          <p>Run <code>npx wrangler pages deploy .</code> or connect your fork to the Cloudflare Pages dashboard. Your instance is live at a <code>*.pages.dev</code> URL immediately — or add any custom domain.</p>
+        </div>
+      </div>
+      <div class="deploy-step">
+        <div class="step-circle">4</div>
+        <div class="step-body">
+          <h4>Customise via the admin panel</h4>
+          <p>Open <code>/admin/</code> on your instance. Default credentials are <code>admin</code> / <code>tileministrator</code> — change these immediately. Upload your word list, set your tagline, and write your About page.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Tilecraft</div>
+      <div class="footer-links">
+        Open source —
+        <a href="https://github.com/smarques/tilecraft" target="_blank" rel="noopener">view on GitHub</a>
+      </div>
+    </div>
+    <a href="https://tilecraft-game.pages.dev/" target="_blank" rel="noopener" class="btn btn-accent">Try the live demo</a>
+  </div>
+</footer>
+
+</body>
+</html>
