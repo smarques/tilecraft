@@ -593,7 +593,10 @@ async function showHighScores() {
 
     try {
         const response = await fetch('/api/scores');
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) {
+            const body = await response.text().catch(() => '');
+            throw new Error(`HTTP ${response.status}: ${body}`);
+        }
         const { scores } = await response.json();
 
         if (!scores || scores.length === 0) {
@@ -662,6 +665,7 @@ async function showHighScores() {
             scoresContainer.appendChild(card);
         });
     } catch (err) {
+        console.error('Failed to load scores:', err);
         scoresContainer.innerHTML = `<p style="color: #c97a7e; text-align: center; margin: 1.5rem 0;">${t('highScores.loadError')}</p>`;
     }
 }
