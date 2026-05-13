@@ -572,8 +572,13 @@ menuAbout.addEventListener('click', async () => {
     try {
         const res = await fetch('/api/settings');
         const data = res.ok ? await res.json() : {};
-        if (data.about) {
-            aboutModalBody.innerHTML = window.marked ? marked.parse(data.about) : `<pre>${data.about}</pre>`;
+        let content = data.about;
+        if (!content) {
+            const mdRes = await fetch('/tilecraft.md');
+            if (mdRes.ok) content = await mdRes.text();
+        }
+        if (content) {
+            aboutModalBody.innerHTML = window.marked ? marked.parse(content) : `<pre>${content}</pre>`;
         } else {
             aboutModalBody.innerHTML = '<p style="color:var(--text-secondary)">No about content configured yet.</p>';
         }

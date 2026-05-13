@@ -41,7 +41,7 @@ tilecraft/
 │       ├── settings.js      # GET /api/settings (public tagline + about)
 │       └── admin/
 │           ├── _auth.js     # Shared auth utilities (PBKDF2, sessions)
-│           ├── setup.js     # POST /api/admin/setup (first-run only)
+│           ├── setup.js     # POST /api/admin/setup (first-run only, legacy)
 │           ├── login.js     # POST /api/admin/login
 │           ├── logout.js    # POST /api/admin/logout
 │           ├── me.js        # GET /api/admin/me
@@ -49,8 +49,11 @@ tilecraft/
 │           ├── words.js     # GET/PUT /api/admin/words
 │           ├── categories.js# GET/PUT /api/admin/categories
 │           ├── settings.js  # GET/PUT /api/admin/settings
-│           └── scores/
-│               └── [id].js  # DELETE /api/admin/scores/:id
+│           ├── users.js     # GET/POST /api/admin/users
+│           ├── scores/
+│           │   └── [id].js  # DELETE /api/admin/scores/:id
+│           └── users/
+│               └── [username].js  # DELETE/PUT /api/admin/users/:username
 └── wrangler.toml            # Cloudflare Pages + D1 binding config
 ```
 
@@ -108,29 +111,17 @@ npx wrangler pages deploy .
 
 ## Admin panel
 
-The admin panel lives at `/admin/` and lets you manage the word list, browse and delete high scores, and edit the header tagline and about page.
+The admin panel lives at `/admin/`. On first login the default admin account is created automatically — no setup step required.
 
-### First-time setup
+**Default credentials:**
+- Username: `admin`
+- Password: `tileministrator`
 
-After deploying (or running `npm run dev` locally), create the admin account by calling the setup endpoint once. It returns 404 on any subsequent call, so it can only be used when no admin exists yet.
-
-```bash
-curl -X POST https://your-site.pages.dev/api/admin/setup \
-  -H 'Content-Type: application/json' \
-  -d '{"username":"admin","password":"yourpassword123"}'
-```
-
-For local dev:
-```bash
-curl -X POST http://localhost:8788/api/admin/setup \
-  -H 'Content-Type: application/json' \
-  -d '{"username":"admin","password":"yourpassword123"}'
-```
-
+Change the password immediately after first login via the **Users** tab.
 
 ### Logging in
 
-Open `/admin/` in your browser and sign in with the credentials you set above.
+Open `/admin/` in your browser and sign in with the credentials above.
 
 ### What the admin can do
 
@@ -139,6 +130,7 @@ Open `/admin/` in your browser and sign in with the credentials you set above.
 | **Scores** | Browse all saved game sessions; delete individual entries (with confirmation) |
 | **Words** | Add or remove words, set their category, load the bundled defaults, save to D1. Also manage categories: edit label and colour, add new categories, delete unused ones |
 | **Settings** | Edit the header tagline; write an About page in Markdown |
+| **Users** | Create new admin accounts, set passwords for any admin, delete admins (cannot delete your own account or the last remaining admin) |
 
 Changes to words and settings take effect immediately for all visitors — no redeployment needed.
 
@@ -146,6 +138,7 @@ Changes to words and settings take effect immediately for all visitors — no re
 
 - Passwords are hashed with **PBKDF2-SHA256** (100 000 iterations, random per-user salt) via the Web Crypto API.
 - Sessions are stored in D1 and expire after **7 days**. The session token is sent as an **HttpOnly, SameSite=Strict** cookie.
+- Deleting an admin account immediately invalidates all of their active sessions.
 
 ---
 
@@ -168,7 +161,7 @@ Saved whenever a player confirms a save.
 
 ### `admin_users`
 
-One row per admin account (currently one supported).
+One row per admin account.
 
 | Column          | Type | Description              |
 |-----------------|------|--------------------------|
@@ -180,11 +173,12 @@ One row per admin account (currently one supported).
 
 Active login sessions.
 
-| Column       | Type     | Description              |
-|--------------|----------|--------------------------|
-| `token`      | TEXT     | 32-byte random hex token |
-| `expires_at` | DATETIME | Session expiry (7 days)  |
-| `created_at` | DATETIME | Login time               |
+| Column       | Type     | Description                    |
+|--------------|----------|--------------------------------|
+| `token`      | TEXT     | 32-byte random hex token       |
+| `username`   | TEXT     | Admin who owns this session    |
+| `expires_at` | DATETIME | Session expiry (7 days)        |
+| `created_at` | DATETIME | Login time                     |
 
 ### `app_settings`
 
@@ -211,6 +205,22 @@ npx wrangler d1 execute tilecraft-db --command \
 # List categories
 npx wrangler d1 execute tilecraft-db --command \
   "SELECT value FROM app_settings WHERE key = 'categories';"
+```
+
+---
+
+## Migrating an existing database
+
+If you deployed before user management was added, run this once to add the `username` column to active sessions:
+
+```bash
+# Local
+npx wrangler d1 execute tilecraft-db --local \
+  --command="ALTER TABLE admin_sessions ADD COLUMN username TEXT NOT NULL DEFAULT ''"
+
+# Production
+npx wrangler d1 execute tilecraft-db \
+  --command="ALTER TABLE admin_sessions ADD COLUMN username TEXT NOT NULL DEFAULT ''"
 ```
 
 ---
