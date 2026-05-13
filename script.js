@@ -567,8 +567,7 @@ const menuAbout = document.getElementById('menu-about');
 const aboutModal = document.getElementById('about-modal');
 const aboutModalBody = document.getElementById('about-modal-body');
 
-menuAbout.addEventListener('click', async () => {
-    closeMenu();
+async function openAboutModal() {
     aboutModalBody.innerHTML = '<p style="color:var(--text-secondary)">Loading…</p>';
     aboutModal.classList.remove('hidden');
 
@@ -588,6 +587,15 @@ menuAbout.addEventListener('click', async () => {
     } catch {
         aboutModalBody.innerHTML = '<p style="color:var(--text-secondary)">Could not load content.</p>';
     }
+}
+
+menuAbout.addEventListener('click', () => {
+    closeMenu();
+    openAboutModal();
+});
+
+document.getElementById('help-btn').addEventListener('click', () => {
+    openAboutModal();
 });
 
 document.getElementById('about-modal-close-btn').addEventListener('click', () => {
