@@ -39,7 +39,7 @@
   },
   "reshuffleConfirm": {
     "title": "Restart Game?",
-    "message": "You have highlighted groups. Reshuffling will restart the game and all selections will be lost.",
+    "message": "You have already made moves and/or highlights. Reshuffling will restart the game and all selections will be lost.",
     "confirmBtn": "Restart"
   },
   "menu": {

@@ -357,8 +357,7 @@ function checkWinCondition() {
 }
 
 shuffleBtn.addEventListener('click', () => {
-    const selectedCount = boardElement.querySelectorAll('.tile-inner.selected').length;
-    if (selectedCount > 0) {
+    if (getScore() > 0) {
         reshuffleConfirmModal.classList.remove('hidden');
     } else {
         initGame();

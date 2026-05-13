@@ -19,7 +19,8 @@
             <div class="moves-display"><span data-i18n="stats.moves">Moves: </span><span id="moves-count">0</span></div>
             <div class="game-title" data-i18n="stats.gameTitle">Tilecraft</div>
             <div class="stats-right">
-                <div class="score-display"><span data-i18n="stats.score">Score: </span><span id="score-count">0</span></div>
+                <div class="score-display"><span data-i18n="stats.score">Score: </span><span id="score-count">0</span>
+                </div>
                 <button id="menu-btn" class="menu-btn" aria-label="Menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -51,7 +52,8 @@
             <button id="name-modal-close-btn" class="modal-close-btn" aria-label="Close">&times;</button>
             <h2 data-i18n="nameModal.title">Welcome to Tilecraft</h2>
             <p data-i18n="nameModal.instruction">Please enter your name to begin discovering the cosmos.</p>
-            <input type="text" id="player-name-input" data-i18n-placeholder="nameModal.placeholder" placeholder="Your Name" autocomplete="off" spellcheck="false" />
+            <input type="text" id="player-name-input" data-i18n-placeholder="nameModal.placeholder"
+                placeholder="Your Name" autocomplete="off" spellcheck="false" />
             <button id="start-game-btn" data-i18n="buttons.startGame">Start Game</button>
         </div>
     </div>
@@ -60,7 +62,8 @@
         <div class="modal-content">
             <h2 data-i18n="saveModal.title">Save Game</h2>
             <p data-i18n="saveModal.instruction">Please enter a comment to save.</p>
-            <textarea id="save-comment" data-i18n-placeholder="saveModal.placeholder" placeholder="Enter your comment here..." rows="8"></textarea>
+            <textarea id="save-comment" data-i18n-placeholder="saveModal.placeholder"
+                placeholder="Enter your comment here..." rows="8"></textarea>
             <div id="word-count-indicator">Word count: 0/30</div>
             <div class="modal-actions">
                 <button id="save-cancel-btn" data-i18n="buttons.cancel">Cancel</button>
@@ -82,7 +85,8 @@
     <div id="reshuffle-confirm-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <h2 data-i18n="reshuffleConfirm.title">Restart Game?</h2>
-            <p data-i18n="reshuffleConfirm.message">You have highlighted groups. Reshuffling will restart the game and all selections will be lost.</p>
+            <p data-i18n="reshuffleConfirm.message">You have already made moves and/or highlights. Reshuffling will
+                restart the game and all selections will be lost.</p>
             <div class="modal-actions" style="margin-top: 1.5rem;">
                 <button id="reshuffle-cancel-btn" data-i18n="buttons.cancel">Cancel</button>
                 <button id="reshuffle-confirm-btn" data-i18n="reshuffleConfirm.confirmBtn">Restart</button>
