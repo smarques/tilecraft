@@ -16,47 +16,20 @@ let isSelecting = true;
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+let tileSoundBuffer = null;
+fetch('./tilesound.mp3')
+    .then(r => r.arrayBuffer())
+    .then(ab => audioCtx.decodeAudioData(ab))
+    .then(buf => { tileSoundBuffer = buf; })
+    .catch(err => console.warn('Could not load tilesound.mp3:', err));
+
 function playSlideSound() {
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-    
-    const duration = 0.15;
-    const bufferSize = audioCtx.sampleRate * duration;
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    
-    for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-    }
-    
-    const noiseSource = audioCtx.createBufferSource();
-    noiseSource.buffer = buffer;
-    
-    const bandpass = audioCtx.createBiquadFilter();
-    bandpass.type = 'bandpass';
-    bandpass.frequency.value = 1800;
-    bandpass.Q.value = 2.0;
-
-    const lowpass = audioCtx.createBiquadFilter();
-    lowpass.type = 'lowpass';
-    lowpass.frequency.value = 300;
-
-    const rumbleSource = audioCtx.createBufferSource();
-    rumbleSource.buffer = buffer;
-    rumbleSource.connect(lowpass);
-
-    const gainNode = audioCtx.createGain();
-    gainNode.gain.setValueAtTime(0.8, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    
-    noiseSource.connect(bandpass);
-    bandpass.connect(gainNode);
-    lowpass.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    
-    noiseSource.start();
-    rumbleSource.start();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (!tileSoundBuffer) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = tileSoundBuffer;
+    src.connect(audioCtx.destination);
+    src.start();
 }
 
 function playBlipSound(isSelected = true) {
@@ -585,6 +558,44 @@ menuHighScore.addEventListener('click', async () => {
 scoresBackBtn.addEventListener('click', () => {
     hideScoresPage();
 });
+
+// --- About page ---
+const menuAbout = document.getElementById('menu-about');
+const aboutModal = document.getElementById('about-modal');
+const aboutModalBody = document.getElementById('about-modal-body');
+
+menuAbout.addEventListener('click', async () => {
+    closeMenu();
+    aboutModalBody.innerHTML = '<p style="color:var(--text-secondary)">Loading…</p>';
+    aboutModal.classList.remove('hidden');
+
+    try {
+        const res = await fetch('/api/settings');
+        const data = res.ok ? await res.json() : {};
+        if (data.about) {
+            aboutModalBody.innerHTML = window.marked ? marked.parse(data.about) : `<pre>${data.about}</pre>`;
+        } else {
+            aboutModalBody.innerHTML = '<p style="color:var(--text-secondary)">No about content configured yet.</p>';
+        }
+    } catch {
+        aboutModalBody.innerHTML = '<p style="color:var(--text-secondary)">Could not load content.</p>';
+    }
+});
+
+document.getElementById('about-modal-close-btn').addEventListener('click', () => {
+    aboutModal.classList.add('hidden');
+});
+
+// Fetch and apply settings overrides (tagline) at startup
+fetch('/api/settings')
+    .then(r => r.ok ? r.json() : {})
+    .then(data => {
+        if (data.tagline) {
+            const el = document.querySelector('[data-i18n="header.tagline"]');
+            if (el) el.textContent = data.tagline;
+        }
+    })
+    .catch(() => {});
 
 async function showHighScores() {
     scoresContainer.innerHTML = `<p style="color: var(--text-secondary); text-align: center; margin: 1.5rem 0;">${t('highScores.loading')}</p>`;

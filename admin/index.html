@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tilecraft Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #1a1a2e;
+            --surface: #16213e;
+            --surface2: #0f3460;
+            --accent: #e94560;
+            --accent2: #d59f9e;
+            --text: #eaeaea;
+            --text-dim: #8888aa;
+            --border: #2a2a4a;
+            --danger: #c0392b;
+            --success: #27ae60;
+            --radius: 8px;
+            --font: 'Outfit', sans-serif;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Login ── */
+        #login-screen {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem 3rem;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-card h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .login-card .subtitle { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 2rem; }
+
+        .field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
+        .field label { font-size: 0.8rem; font-weight: 600; color: var(--text-dim); letter-spacing: 0.05em; text-transform: uppercase; }
+        .field input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 1rem;
+            padding: 0.65rem 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .field input:focus { border-color: var(--accent); }
+
+        .error-msg {
+            background: rgba(201, 57, 43, 0.15);
+            border: 1px solid var(--danger);
+            border-radius: var(--radius);
+            color: #e74c3c;
+            font-size: 0.85rem;
+            padding: 0.6rem 0.9rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .error-msg.visible { display: block; }
+
+        /* ── Buttons ── */
+        .btn {
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-family: var(--font);
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.65rem 1.2rem;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-primary { background: var(--accent); color: #fff; width: 100%; padding: 0.8rem; font-size: 1rem; }
+        .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+        .btn-secondary { background: var(--surface2); color: var(--text); }
+        .btn-secondary:hover:not(:disabled) { opacity: 0.8; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover:not(:disabled) { opacity: 0.85; }
+        .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+
+        /* ── Admin shell ── */
+        #admin-screen { display: none; flex-direction: column; min-height: 100vh; }
+        #admin-screen.visible { display: flex; }
+
+        .admin-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .admin-header .brand { font-size: 1rem; font-weight: 800; }
+        .admin-header .brand span { color: var(--accent); }
+
+        .admin-nav { display: flex; gap: 0.3rem; }
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: var(--radius);
+            color: var(--text-dim);
+            cursor: pointer;
+            font-family: var(--font);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.45rem 0.9rem;
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
+        }
+        .nav-btn:hover { color: var(--text); border-color: var(--border); }
+        .nav-btn.active { background: var(--surface2); color: var(--text); border-color: var(--border); }
+
+        .admin-content { flex: 1; padding: 2rem 1.5rem; max-width: 1000px; width: 100%; margin: 0 auto; }
+
+        .tab { display: none; }
+        .tab.active { display: block; }
+
+        .tab-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .tab-desc { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+        /* ── Table ── */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        .data-table th {
+            background: var(--surface2);
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding: 0.7rem 0.9rem;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .data-table th:first-child { border-radius: var(--radius) 0 0 0; }
+        .data-table th:last-child { border-radius: 0 var(--radius) 0 0; }
+        .data-table td { border-bottom: 1px solid var(--border); padding: 0.65rem 0.9rem; vertical-align: middle; }
+        .data-table tr:hover td { background: rgba(255,255,255,0.03); }
+        .data-table .truncate { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: auto; }
+
+        /* ── Confirm overlay ── */
+        .overlay {
+            align-items: center;
+            background: rgba(0,0,0,0.7);
+            bottom: 0;
+            display: none;
+            justify-content: center;
+            left: 0;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 100;
+        }
+        .overlay.visible { display: flex; }
+        .dialog {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-width: 380px;
+            padding: 2rem;
+            width: 90%;
+        }
+        .dialog h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
+        .dialog p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; }
+        .dialog-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+        /* ── Words editor ── */
+        .words-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .words-toolbar input[type="text"], .words-toolbar select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+            outline: none;
+        }
+        .words-toolbar input[type="text"]:focus, .words-toolbar select:focus { border-color: var(--accent); }
+        .words-toolbar input[type="text"] { flex: 1; min-width: 140px; }
+        .word-count { color: var(--text-dim); font-size: 0.8rem; margin-left: auto; }
+
+        /* ── Settings ── */
+        .settings-group { margin-bottom: 2rem; }
+        .settings-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        .settings-group input[type="text"],
+        .settings-group textarea {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 0.95rem;
+            padding: 0.7rem 0.9rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+            resize: vertical;
+        }
+        .settings-group input:focus, .settings-group textarea:focus { border-color: var(--accent); }
+        .settings-group textarea { min-height: 220px; line-height: 1.6; }
+        .settings-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+
+        .save-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .btn-flash-ok { background: var(--success) !important; }
+        .btn-flash-err { background: var(--danger) !important; }
+
+        .loading { color: var(--text-dim); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
+
+        .section-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0 2rem; }
+        .section-heading { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .cat-key { background: var(--surface2); border-radius: 4px; font-family: monospace; font-size: 0.85rem; padding: 0.15em 0.4em; }
+        .cat-label-input, .cat-color-cell input[type="text"] {
+            background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+            color: var(--text); font-family: var(--font); font-size: 0.875rem;
+            padding: 0.35rem 0.6rem; width: 100%; outline: none;
+        }
+        .cat-label-input:focus { border-color: var(--accent); }
+        .cat-color-input { width: 44px; height: 32px; padding: 2px 4px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<!-- Login -->
+<section id="login-screen">
+    <div class="login-card">
+        <h1>Tilecraft <span style="color:var(--accent)">Admin</span></h1>
+        <p class="subtitle">Sign in to manage your game</p>
+        <div id="login-error" class="error-msg"></div>
+        <form id="login-form" autocomplete="on">
+            <div class="field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" autocomplete="username" required>
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="login-btn">Sign in</button>
+        </form>
+    </div>
+</section>
+
+<!-- Admin shell -->
+<section id="admin-screen">
+    <header class="admin-header">
+        <div class="brand">Tilecraft <span>Admin</span></div>
+        <nav class="admin-nav">
+            <button class="nav-btn active" data-tab="scores">Scores</button>
+            <button class="nav-btn" data-tab="words">Words</button>
+            <button class="nav-btn" data-tab="settings">Settings</button>
+        </nav>
+        <button class="btn btn-secondary btn-sm" id="logout-btn">Logout</button>
+    </header>
+
+    <div class="admin-content">
+
+        <!-- Scores tab -->
+        <div class="tab active" id="tab-scores">
+            <h2 class="tab-title">High Scores</h2>
+            <p class="tab-desc">Browse and remove entries from the leaderboard.</p>
+            <div id="scores-content"><p class="loading">Loading…</p></div>
+        </div>
+
+        <!-- Words tab -->
+        <div class="tab" id="tab-words">
+            <h2 class="tab-title">Word List</h2>
+            <p class="tab-desc">Manage the words that appear on the game tiles. Changes take effect immediately after saving.</p>
+
+            <div class="words-toolbar">
+                <input type="text" id="new-word-text" placeholder="New word…" maxlength="30">
+                <select id="new-word-category"></select>
+                <button class="btn btn-secondary" id="add-word-btn">Add</button>
+                <button class="btn btn-secondary btn-sm" id="load-static-btn" title="Reset to the words from the bundled data/words.json">Load defaults</button>
+                <span class="word-count" id="word-count-display"></span>
+            </div>
+
+            <div class="table-wrap" id="words-table-wrap">
+                <p class="loading">Loading…</p>
+            </div>
+
+            <div class="save-bar">
+                <button class="btn btn-primary" id="save-words-btn">Save word list</button>
+            </div>
+
+            <hr class="section-divider">
+
+            <h3 class="section-heading">Categories</h3>
+            <p class="tab-desc">Categories group words by tile colour. A category key cannot be changed after creation — only its label and colour.</p>
+
+            <div class="words-toolbar">
+                <input type="text" id="new-cat-key" placeholder="key (e.g. tools)" maxlength="30" style="max-width:160px">
+                <input type="text" id="new-cat-label" placeholder="Label" maxlength="50" style="max-width:160px">
+                <input type="color" id="new-cat-color" value="#cccccc" style="width:44px;height:38px;padding:2px 4px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);cursor:pointer">
+                <button class="btn btn-secondary" id="add-cat-btn">Add category</button>
+            </div>
+
+            <div class="table-wrap" id="cats-table-wrap">
+                <p class="loading">Loading…</p>
+            </div>
+
+            <div class="save-bar">
+                <button class="btn btn-primary" id="save-cats-btn">Save categories</button>
+            </div>
+        </div>
+
+        <!-- Settings tab -->
+        <div class="tab" id="tab-settings">
+            <h2 class="tab-title">Settings</h2>
+            <p class="tab-desc">Edit the site tagline and the About page content (Markdown supported).</p>
+
+            <div class="settings-group">
+                <label for="setting-tagline">Header tagline</label>
+                <input type="text" id="setting-tagline" maxlength="200" placeholder="Slide the words to solve the cosmos">
+            </div>
+
+            <div class="settings-group">
+                <label for="setting-about">About page (Markdown)</label>
+                <textarea id="setting-about" placeholder="# About Tilecraft&#10;&#10;Write about your game here…"></textarea>
+                <p class="settings-hint">Supports headings, bold, italic, lists, and links.</p>
+            </div>
+
+            <div class="save-bar">
+                <button class="btn btn-primary" id="save-settings-btn">Save settings</button>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Delete confirm overlay -->
+<div class="overlay" id="confirm-overlay">
+    <div class="dialog">
+        <h3>Delete score?</h3>
+        <p id="confirm-desc"></p>
+        <div class="dialog-actions">
+            <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+            <button class="btn btn-danger" id="confirm-delete">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = '/api/admin';
+let currentWords = [];
+let pendingDeleteId = null;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+async function apiFetch(path, opts = {}) {
+    const res = await fetch(API + path, {
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+        ...opts
+    });
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok, status: res.status, data };
+}
+
+function showFeedback(el, msg, isErr) {
+    el.textContent = msg;
+    el.className = 'save-feedback ' + (isErr ? 'err' : 'ok');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.className = 'save-feedback'; }, 3500);
+}
+
+function flashBtn(btn, msg, isErr) {
+    const original = btn.dataset.originalLabel || btn.textContent;
+    btn.dataset.originalLabel = original;
+    btn.textContent = msg;
+    btn.classList.add(isErr ? 'btn-flash-err' : 'btn-flash-ok');
+    clearTimeout(btn._ft);
+    btn._ft = setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove('btn-flash-ok', 'btn-flash-err');
+    }, 2500);
+}
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+
+async function checkAuth() {
+    const { ok } = await apiFetch('/me');
+    return ok;
+}
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    const errEl = document.getElementById('login-error');
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    errEl.classList.remove('visible');
+
+    const { ok, data } = await apiFetch('/login', {
+        method: 'POST',
+        body: JSON.stringify({
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        })
+    });
+
+    if (ok) {
+        showAdmin();
+    } else {
+        errEl.textContent = data.error || 'Login failed';
+        errEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+    }
+});
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+    await apiFetch('/logout', { method: 'POST' });
+    location.reload();
+});
+
+// ── Tab navigation ────────────────────────────────────────────────────────────
+
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (tab === 'words') { if (currentWords.length === 0) loadWords(); renderCatsTable(); }
+        if (tab === 'settings') loadSettings();
+    });
+});
+
+// ── Show admin ────────────────────────────────────────────────────────────────
+
+async function showAdmin() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').classList.add('visible');
+    await Promise.all([loadCategories(), loadScores()]);
+}
+
+// ── Scores ────────────────────────────────────────────────────────────────────
+
+async function loadScores() {
+    const el = document.getElementById('scores-content');
+    el.innerHTML = '<p class="loading">Loading…</p>';
+    const { ok, data } = await apiFetch('/scores');
+    if (!ok) { el.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
+
+    if (!data.scores.length) {
+        el.innerHTML = '<p class="loading">No scores yet.</p>';
+        return;
+    }
+
+    const rows = data.scores.map(s => `
+        <tr>
+            <td>${s.id}</td>
+            <td>${esc(s.player_name)}</td>
+            <td>${s.score}</td>
+            <td>${s.moves}</td>
+            <td class="truncate">${esc(s.statement || '')}</td>
+            <td>${s.date ? s.date.slice(0, 10) : ''}</td>
+            <td><button class="btn btn-danger btn-sm" data-id="${s.id}" data-name="${esc(s.player_name)}" data-score="${s.score}">Delete</button></td>
+        </tr>`).join('');
+
+    el.innerHTML = `
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr>
+                    <th>ID</th><th>Player</th><th>Score</th><th>Moves</th>
+                    <th>Statement</th><th>Date</th><th></th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+
+    el.querySelectorAll('[data-id]').forEach(btn => {
+        btn.addEventListener('click', () => confirmDelete(
+            parseInt(btn.dataset.id),
+            btn.dataset.name,
+            btn.dataset.score
+        ));
+    });
+}
+
+function confirmDelete(id, name, score) {
+    pendingDeleteId = id;
+    document.getElementById('confirm-desc').textContent =
+        `Delete score ${score} by "${name}"? This cannot be undone.`;
+    document.getElementById('confirm-overlay').classList.add('visible');
+}
+
+document.getElementById('confirm-cancel').addEventListener('click', () => {
+    document.getElementById('confirm-overlay').classList.remove('visible');
+    pendingDeleteId = null;
+});
+
+document.getElementById('confirm-delete').addEventListener('click', async () => {
+    if (!pendingDeleteId) return;
+    document.getElementById('confirm-overlay').classList.remove('visible');
+    const { ok, data } = await apiFetch(`/scores/${pendingDeleteId}`, { method: 'DELETE' });
+    pendingDeleteId = null;
+    if (ok) {
+        loadScores();
+    } else {
+        alert('Delete failed: ' + (data.error || 'unknown error'));
+    }
+});
+
+// ── Words ─────────────────────────────────────────────────────────────────────
+
+let currentCategories = {};
+
+async function loadCategories() {
+    try {
+        // Try D1 first (via admin endpoint), fall back to static file
+        const { ok, data } = await apiFetch('/categories');
+        if (ok && data.categories) {
+            currentCategories = data.categories;
+        } else {
+            const res = await fetch('/data/categories.json');
+            currentCategories = await res.json();
+        }
+    } catch {
+        currentCategories = {};
+    }
+    refreshCategorySelect();
+    renderCatsTable();
+}
+
+function refreshCategorySelect() {
+    const sel = document.getElementById('new-word-category');
+    sel.innerHTML = Object.entries(currentCategories)
+        .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
+}
+
+function renderCatsTable() {
+    const wrap = document.getElementById('cats-table-wrap');
+    const entries = Object.entries(currentCategories);
+
+    if (!entries.length) {
+        wrap.innerHTML = '<p class="loading">No categories yet. Add one above.</p>';
+        return;
+    }
+
+    const rows = entries.map(([key, { label, color }]) => `
+        <tr data-cat-key="${esc(key)}">
+            <td><code class="cat-key">${esc(key)}</code></td>
+            <td><input class="cat-label-input" type="text" value="${esc(label)}" maxlength="50" data-key="${esc(key)}"></td>
+            <td><input class="cat-color-input" type="color" value="${esc(color)}" data-key="${esc(key)}"></td>
+            <td><button class="btn btn-danger btn-sm" data-del-cat="${esc(key)}">✕</button></td>
+        </tr>`).join('');
+
+    wrap.innerHTML = `
+        <table class="data-table">
+            <thead><tr><th>Key</th><th>Label</th><th>Colour</th><th></th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>`;
+
+    wrap.querySelectorAll('.cat-label-input').forEach(input => {
+        input.addEventListener('input', () => {
+            if (currentCategories[input.dataset.key]) {
+                currentCategories[input.dataset.key].label = input.value;
+            }
+        });
+    });
+
+    wrap.querySelectorAll('.cat-color-input').forEach(input => {
+        input.addEventListener('input', () => {
+            if (currentCategories[input.dataset.key]) {
+                currentCategories[input.dataset.key].color = input.value;
+            }
+        });
+    });
+
+    wrap.querySelectorAll('[data-del-cat]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const key = btn.dataset.delCat;
+            const inUse = currentWords.filter(w => w.category === key).length;
+            if (inUse > 0 && !confirm(`${inUse} word(s) use the "${key}" category. Delete anyway?`)) return;
+            delete currentCategories[key];
+            renderCatsTable();
+            refreshCategorySelect();
+        });
+    });
+}
+
+document.getElementById('add-cat-btn').addEventListener('click', () => {
+    const keyInput = document.getElementById('new-cat-key');
+    const labelInput = document.getElementById('new-cat-label');
+    const colorInput = document.getElementById('new-cat-color');
+    const key = keyInput.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    const label = labelInput.value.trim();
+    if (!key || !label) return;
+    if (currentCategories[key]) { alert(`Category key "${key}" already exists.`); return; }
+    currentCategories[key] = { label, color: colorInput.value };
+    keyInput.value = '';
+    labelInput.value = '';
+    colorInput.value = '#cccccc';
+    renderCatsTable();
+    refreshCategorySelect();
+});
+
+document.getElementById('save-cats-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('save-cats-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    const { ok, data } = await apiFetch('/categories', {
+        method: 'PUT',
+        body: JSON.stringify({ categories: currentCategories })
+    });
+    btn.disabled = false;
+    flashBtn(btn, ok ? `✓ Saved ${data.count} categories` : `✗ ${data.error || 'Save failed'}`, !ok);
+});
+
+async function loadWords() {
+    const wrap = document.getElementById('words-table-wrap');
+    wrap.innerHTML = '<p class="loading">Loading…</p>';
+    const { ok, data } = await apiFetch('/words');
+    if (!ok) { wrap.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
+    currentWords = data.words || [];
+    renderWordsTable();
+}
+
+async function loadDefaultWords() {
+    const res = await fetch('/data/words.json');
+    currentWords = await res.json();
+    renderWordsTable();
+}
+
+function renderWordsTable() {
+    const wrap = document.getElementById('words-table-wrap');
+    document.getElementById('word-count-display').textContent = `${currentWords.length} words`;
+
+    if (!currentWords.length) {
+        wrap.innerHTML = '<p class="loading">No words yet. Add one above or load defaults.</p>';
+        return;
+    }
+
+    const rows = currentWords.map((w, i) => `
+        <tr data-index="${i}">
+            <td>${esc(w.text)}</td>
+            <td>${esc(currentCategories[w.category]?.label || w.category)}</td>
+            <td><button class="btn btn-danger btn-sm" data-del="${i}">✕</button></td>
+        </tr>`).join('');
+
+    wrap.innerHTML = `
+        <table class="data-table">
+            <thead><tr><th>Word</th><th>Category</th><th></th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>`;
+
+    wrap.querySelectorAll('[data-del]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const i = parseInt(btn.dataset.del);
+            currentWords.splice(i, 1);
+            renderWordsTable();
+        });
+    });
+}
+
+document.getElementById('add-word-btn').addEventListener('click', () => {
+    const text = document.getElementById('new-word-text').value.trim().toUpperCase();
+    const category = document.getElementById('new-word-category').value;
+    if (!text) return;
+    currentWords.push({ text, category });
+    document.getElementById('new-word-text').value = '';
+    renderWordsTable();
+});
+
+document.getElementById('new-word-text').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('add-word-btn').click(); }
+});
+
+document.getElementById('load-static-btn').addEventListener('click', async () => {
+    if (!confirm('Replace current list with the bundled defaults?')) return;
+    await loadDefaultWords();
+});
+
+document.getElementById('save-words-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('save-words-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    const { ok, data } = await apiFetch('/words', {
+        method: 'PUT',
+        body: JSON.stringify({ words: currentWords })
+    });
+    btn.disabled = false;
+    flashBtn(btn, ok ? `✓ Saved ${data.count} words` : `✗ ${data.error || 'Save failed'}`, !ok);
+});
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+
+async function loadSettings() {
+    const { ok, data } = await apiFetch('/settings');
+    if (!ok) return;
+    if (data.tagline !== undefined) document.getElementById('setting-tagline').value = data.tagline;
+    if (data.about !== undefined) document.getElementById('setting-about').value = data.about;
+}
+
+document.getElementById('save-settings-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('save-settings-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    const { ok, data } = await apiFetch('/settings', {
+        method: 'PUT',
+        body: JSON.stringify({
+            tagline: document.getElementById('setting-tagline').value,
+            about: document.getElementById('setting-about').value
+        })
+    });
+    btn.disabled = false;
+    flashBtn(btn, ok ? '✓ Settings saved' : `✗ ${data.error || 'Save failed'}`, !ok);
+});
+
+// ── Escape HTML ───────────────────────────────────────────────────────────────
+
+function esc(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+
+(async () => {
+    if (await checkAuth()) {
+        showAdmin();
+    }
+})();
+</script>
+</body>
+</html>

@@ -1,8 +1,8 @@
 (async function () {
     const [translations, gameWords, categories] = await Promise.all([
         fetch('./locales/en.json').then(r => r.json()),
-        fetch('./data/words.json').then(r => r.json()),
-        fetch('./data/categories.json').then(r => r.json())
+        fetch('/api/words').then(r => r.ok ? r.json() : fetch('./data/words.json').then(r => r.json())),
+        fetch('/api/categories').then(r => r.ok ? r.json() : fetch('./data/categories.json').then(r => r.json()))
     ]);
 
     function t(key, vars = {}) {

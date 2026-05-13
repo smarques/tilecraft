@@ -44,7 +44,8 @@
   },
   "menu": {
     "play": "Play",
-    "highScore": "High Scores"
+    "highScore": "High Scores",
+    "about": "About"
   },
   "highScores": {
     "title": "High Scores",

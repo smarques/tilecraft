@@ -98,8 +98,16 @@
         <ul>
             <li><button id="menu-play" class="menu-item" data-i18n="menu.play">Play</button></li>
             <li><button id="menu-highscore" class="menu-item" data-i18n="menu.highScore">High Scores</button></li>
+            <li><button id="menu-about" class="menu-item" data-i18n="menu.about">About</button></li>
         </ul>
     </nav>
+
+    <div id="about-modal" class="modal-overlay hidden">
+        <div class="modal-content about-modal-content">
+            <button id="about-modal-close-btn" class="modal-close-btn" aria-label="Close">&times;</button>
+            <div id="about-modal-body" class="about-body"></div>
+        </div>
+    </div>
 
     <div id="scores-page" class="scores-page hidden">
         <div class="scores-page-header">
@@ -119,6 +127,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="i18n.js"></script>
     <script src="script.js"></script>
 </body>
