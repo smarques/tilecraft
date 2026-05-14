@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="../config.js"></script>
     <script src="../board-renderer.js"></script>
     <style>
@@ -421,6 +422,7 @@
         }
 
         .settings-group input[type="text"],
+        .settings-group input[type="number"],
         .settings-group textarea {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -523,6 +525,126 @@
             border: 1px solid var(--border);
             background: var(--surface);
             cursor: pointer;
+        }
+
+        /* ── Markdown editor/preview ── */
+        .md-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: -1px;
+        }
+
+        .md-tab-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: var(--radius) var(--radius) 0 0;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-family: var(--font);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.9rem;
+            transition: color 0.15s, background 0.15s;
+        }
+
+        .md-tab-btn.active {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .md-tab-btn:not(.active):hover {
+            color: var(--text);
+        }
+
+        .md-pane {
+            border: 1px solid var(--border);
+            border-radius: 0 var(--radius) var(--radius) var(--radius);
+        }
+
+        .md-pane #setting-about {
+            border: none;
+            border-radius: 0 var(--radius) var(--radius) var(--radius);
+        }
+
+        #md-preview {
+            background: var(--surface);
+            border-radius: 0 var(--radius) var(--radius) var(--radius);
+            color: var(--text);
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            min-height: 220px;
+            padding: 0.9rem 1rem;
+        }
+
+        #md-preview h1, #md-preview h2, #md-preview h3 {
+            font-weight: 700;
+            margin: 1.2em 0 0.4em;
+        }
+
+        #md-preview h1 { font-size: 1.4em; }
+        #md-preview h2 { font-size: 1.15em; }
+        #md-preview h3 { font-size: 1em; }
+
+        #md-preview p { margin: 0.6em 0; }
+
+        #md-preview ul, #md-preview ol {
+            margin: 0.6em 0;
+            padding-left: 1.5em;
+        }
+
+        #md-preview li { margin: 0.25em 0; }
+
+        #md-preview strong { font-weight: 700; }
+        #md-preview em { font-style: italic; }
+
+        #md-preview a {
+            color: var(--accent2);
+            text-decoration: underline;
+        }
+
+        #md-preview hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 1.5em 0;
+        }
+
+        #md-preview code {
+            background: var(--bg);
+            border-radius: 3px;
+            font-size: 0.88em;
+            padding: 0.1em 0.35em;
+        }
+
+        #md-preview pre {
+            background: var(--bg);
+            border-radius: var(--radius);
+            overflow-x: auto;
+            padding: 0.75rem 1rem;
+        }
+
+        #md-preview pre code {
+            background: none;
+            padding: 0;
+        }
+
+        #md-preview table {
+            border-collapse: collapse;
+            margin: 0.75em 0;
+            width: 100%;
+        }
+
+        #md-preview th, #md-preview td {
+            border: 1px solid var(--border);
+            padding: 0.4em 0.7em;
+            text-align: left;
+        }
+
+        #md-preview th {
+            background: var(--surface2);
+            font-weight: 600;
         }
 
     </style>
@@ -659,9 +781,32 @@
                 </div>
 
                 <div class="settings-group">
-                    <label for="setting-about">About page (Markdown)</label>
-                    <textarea id="setting-about"
-                        placeholder="# About Tilecraft&#10;&#10;Write about your game here…"></textarea>
+                    <label for="setting-min-words">Minimum words required to save</label>
+                    <input type="number" id="setting-min-words" min="0" max="500" step="1"
+                        placeholder="30" style="width:120px">
+                    <p class="settings-hint">Players must write at least this many words before they can save. Default: 30.</p>
+                </div>
+
+                <div class="settings-group">
+                    <label for="setting-save-placeholder">Save dialog — textarea placeholder</label>
+                    <textarea id="setting-save-placeholder" rows="3"
+                        placeholder="Please add some personal reflection on your choices in this game. This will be included in the image when you download your board."></textarea>
+                    <p class="settings-hint">Prompt shown inside the comment box when it is empty. Leave blank to use the default.</p>
+                </div>
+
+                <div class="settings-group">
+                    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:0.5rem;">
+                        <label style="margin-bottom:0">About page (Markdown)</label>
+                        <div class="md-tabs">
+                            <button class="md-tab-btn active" id="md-tab-edit">Edit</button>
+                            <button class="md-tab-btn" id="md-tab-preview">Preview</button>
+                        </div>
+                    </div>
+                    <div class="md-pane">
+                        <textarea id="setting-about"
+                            placeholder="# About Tilecraft&#10;&#10;Write about your game here…"></textarea>
+                        <div id="md-preview"></div>
+                    </div>
                     <p class="settings-hint">Supports headings, bold, italic, lists, and links.</p>
                 </div>
 
@@ -721,6 +866,7 @@
         let pendingSetPwTarget = null;
         let wordsDirty = false;
         let catsDirty = false;
+        let settingsDirty = false;
 
         // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -764,6 +910,17 @@
             if (val && btn._ft) {
                 clearTimeout(btn._ft);
                 btn.textContent = btn.dataset.originalLabel || 'Save categories';
+                btn.classList.remove('btn-flash-ok', 'btn-flash-err');
+            }
+            updateSaveBtn(btn, val);
+        }
+
+        function setSettingsDirty(val) {
+            settingsDirty = val;
+            const btn = document.getElementById('save-settings-btn');
+            if (val && btn._ft) {
+                clearTimeout(btn._ft);
+                btn.textContent = btn.dataset.originalLabel || 'Save settings';
                 btn.classList.remove('btn-flash-ok', 'btn-flash-err');
             }
             updateSaveBtn(btn, val);
@@ -923,6 +1080,7 @@
             await Promise.all([loadCategories(), loadScores()]);
             setWordsDirty(false);
             setCatsDirty(false);
+            setSettingsDirty(false);
             activateAdminTab(getStoredAdminTab(), { persist: false });
         }
 
@@ -1371,27 +1529,73 @@
             const { ok, data } = await apiFetch('/settings');
             if (!ok) return;
             if (data.tagline !== undefined) document.getElementById('setting-tagline').value = data.tagline;
-            if (data.about !== undefined) document.getElementById('setting-about').value = data.about;
+            if (data.min_words !== undefined) document.getElementById('setting-min-words').value = data.min_words;
+            if (data.save_placeholder !== undefined) document.getElementById('setting-save-placeholder').value = data.save_placeholder;
+            if (data.about) {
+                document.getElementById('setting-about').value = data.about;
+            } else {
+                try {
+                    const res = await fetch('/tilecraft.md');
+                    if (res.ok) document.getElementById('setting-about').value = await res.text();
+                } catch { /* leave empty */ }
+            }
+            setSettingsDirty(false);
         }
+
+        ['setting-tagline', 'setting-min-words', 'setting-about', 'setting-save-placeholder'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => setSettingsDirty(true));
+        });
+
+        // ── Markdown preview toggle ───────────────────────────────────────────────────
+
+        function renderMdPreview() {
+            const src = document.getElementById('setting-about').value;
+            document.getElementById('md-preview').innerHTML =
+                typeof marked !== 'undefined' ? marked.parse(src) : src.replace(/</g, '&lt;');
+        }
+
+        document.getElementById('md-tab-edit').addEventListener('click', () => {
+            document.getElementById('md-tab-edit').classList.add('active');
+            document.getElementById('md-tab-preview').classList.remove('active');
+            document.getElementById('setting-about').style.display = '';
+            document.getElementById('md-preview').style.display = 'none';
+        });
+
+        document.getElementById('md-tab-preview').addEventListener('click', () => {
+            document.getElementById('md-tab-preview').classList.add('active');
+            document.getElementById('md-tab-edit').classList.remove('active');
+            renderMdPreview();
+            document.getElementById('setting-about').style.display = 'none';
+            document.getElementById('md-preview').style.display = 'block';
+        });
 
         document.getElementById('save-settings-btn').addEventListener('click', async () => {
             const btn = document.getElementById('save-settings-btn');
             btn.dataset.originalLabel = btn.dataset.originalLabel || btn.textContent;
+            btn.classList.remove('btn-save-dirty');
             btn.disabled = true;
             btn.textContent = 'Saving…';
             try {
+                const minWordsVal = document.getElementById('setting-min-words').value;
                 const { ok, data } = await apiFetch('/settings', {
                     method: 'PUT',
                     body: JSON.stringify({
                         tagline: document.getElementById('setting-tagline').value,
-                        about: document.getElementById('setting-about').value
+                        about: document.getElementById('setting-about').value,
+                        save_placeholder: document.getElementById('setting-save-placeholder').value,
+                        ...(minWordsVal !== '' && { min_words: parseInt(minWordsVal) })
                     })
                 });
-                flashBtn(btn, ok ? '✓ Settings saved' : `✗ ${data.error || 'Save failed'}`, !ok);
+                if (ok) {
+                    setSettingsDirty(false);
+                    flashBtn(btn, '✓ Settings saved', false);
+                } else {
+                    btn.disabled = false;
+                    flashBtn(btn, `✗ ${data.error || 'Save failed'}`, true);
+                }
             } catch (err) {
-                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
-            } finally {
                 btn.disabled = false;
+                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
             }
         });
 

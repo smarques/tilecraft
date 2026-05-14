@@ -105,14 +105,14 @@ Highlight mode lets you select groups of tiles to form interesting word combinat
 Score = Total moves + (Number of highlighted tiles × 50)
 ```
 
-Your score is shown live in the top-right corner. Lower moves and more highlighted tiles produce a higher score.
+Your score is shown live in the top-right corner. More highlighted tiles produce a higher score.
 
 ### Saving Your Creation
 
 You can save a snapshot of the board at any time **while at least one tile is highlighted**.
 
 1. Click **Save**.
-2. Write a statement about your word combination — **at least 30 words** are required. The word count updates live; the confirm button enables once you reach 30 words.
+2. Write a statement about your word combination
 3. Click **Confirm**.
 
 What happens next:

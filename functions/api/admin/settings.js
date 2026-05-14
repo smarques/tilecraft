@@ -6,7 +6,7 @@ export async function onRequestGet(context) {
 
     try {
         const { results } = await env.DB.prepare(
-            `SELECT key, value FROM app_settings WHERE key IN ('tagline', 'about')`
+            `SELECT key, value FROM app_settings WHERE key IN ('tagline', 'about', 'min_words', 'save_placeholder')`
         ).all();
         const out = {};
         for (const row of results) out[row.key] = row.value;
@@ -22,11 +22,17 @@ export async function onRequestPut(context) {
 
     try {
         const body = await request.json();
-        const allowed = ['tagline', 'about'];
+        const allowed = ['tagline', 'about', 'min_words', 'save_placeholder'];
         const updates = [];
 
         for (const key of allowed) {
-            if (key in body) {
+            if (!(key in body)) continue;
+            if (key === 'min_words') {
+                const n = parseInt(body[key]);
+                if (!Number.isInteger(n) || n < 0)
+                    return json({ error: 'min_words must be a non-negative integer' }, 400);
+                updates.push({ key, value: String(n) });
+            } else {
                 if (typeof body[key] !== 'string')
                     return json({ error: `${key} must be a string` }, 400);
                 updates.push({ key, value: body[key] });

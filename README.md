@@ -11,7 +11,7 @@ Tilecraft is a Serious Game for Participatory Brainstorming
 1. Enter your name to start.
 2. **Move mode** — click any tile adjacent to the empty space to slide it.
 3. **Highlight mode** — click or drag to select a contiguous group of tiles.
-4. When you have a group highlighted that you want to keep, click **Save** and write a statement (minimum 30 words). The game captures a screenshot of your board and comment, downloads it as a PNG, and records the session to the database.
+4. When you have a group highlighted that you want to keep, click **Save** and write a statement (minimum 30 words is the default but it can be changed in admin). The game captures a screenshot of your board and comment, downloads it as a PNG, and records the session to the database.
 5. The puzzle is solved when all tiles are in their original order.
 
 **Score** = moves + (highlighted tiles × 50)
@@ -164,7 +164,7 @@ Saved whenever a player confirms a save.
 | `player_name` | TEXT     | Name entered at game start               |
 | `score`       | INTEGER  | Final score at time of save              |
 | `moves`       | INTEGER  | Number of tile slides made               |
-| `statement`   | TEXT     | Player's written comment (≥ 30 words)    |
+| `statement`   | TEXT     | Player's written comment                 |
 | `board_state` | TEXT     | Full 6×6 grid as JSON                    |
 | `date`        | TEXT     | ISO 8601 timestamp of the save           |
 | `created_at`  | DATETIME | Row insertion time (set by D1)           |

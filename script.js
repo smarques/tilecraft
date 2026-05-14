@@ -3,6 +3,8 @@ function getRandomWords(count) {
     return shuffled.slice(0, count);
 }
 
+let minWords = 30;
+
 let state = []; // Array to store the current board state
 let emptyIndex = TOTAL_TILES - 1; // Index of the empty tile in the state array
 let movesCount = 0;
@@ -553,12 +555,13 @@ function updateWordCount() {
     
     wordCountIndicator.textContent = t('saveModal.wordCount', { count });
 
-    if (count >= 30) {
+    if (count >= minWords) {
         wordCountIndicator.classList.add('ready');
-        wordCountIndicator.textContent = t('saveModal.wordCountReady', { count });
+        wordCountIndicator.textContent = t('saveModal.wordCountReady', { count, min: minWords });
         saveConfirmBtn.disabled = false;
     } else {
         wordCountIndicator.classList.remove('ready');
+        wordCountIndicator.textContent = t('saveModal.wordCount', { count, min: minWords });
         saveConfirmBtn.disabled = true;
     }
 }
@@ -685,13 +688,20 @@ aboutModal.addEventListener('click', (e) => {
     if (e.target === aboutModal) aboutModal.classList.add('hidden');
 });
 
-// Fetch and apply settings overrides (tagline) at startup
+// Fetch and apply settings overrides (tagline, min_words) at startup
 fetch('/api/settings')
     .then(r => r.ok ? r.json() : {})
     .then(data => {
         if (data.tagline) {
             const el = document.querySelector('[data-i18n="header.tagline"]');
             if (el) el.textContent = data.tagline;
+        }
+        if (data.min_words !== undefined) {
+            const n = parseInt(data.min_words);
+            if (Number.isInteger(n) && n >= 0) minWords = n;
+        }
+        if (data.save_placeholder) {
+            saveComment.placeholder = data.save_placeholder;
         }
     })
     .catch(() => {});

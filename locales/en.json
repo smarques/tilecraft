@@ -31,8 +31,8 @@
     "title": "Save Game",
     "instruction": "Please enter a comment to save.",
     "placeholder": "Please add some personal reflection on your choices in this game. This will be included in the image when you download your board.",
-    "wordCount": "Word count: {count}/30",
-    "wordCountReady": "Word count: {count}/30 (Ready!)"
+    "wordCount": "Please enter at least {min} words. Word count: {count}/{min}",
+    "wordCountReady": "Word count: {count}/{min} (Ready!)"
   },
   "dialog": {
     "defaultTitle": "Notice"

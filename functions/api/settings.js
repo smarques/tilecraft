@@ -3,7 +3,7 @@ export async function onRequestGet(context) {
     const { env } = context;
     try {
         const { results } = await env.DB.prepare(
-            `SELECT key, value FROM app_settings WHERE key IN ('tagline', 'about')`
+            `SELECT key, value FROM app_settings WHERE key IN ('tagline', 'about', 'min_words', 'save_placeholder')`
         ).all();
         const out = {};
         for (const row of results) out[row.key] = row.value;
