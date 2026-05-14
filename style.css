@@ -877,6 +877,7 @@ a.menu-item {
     color: var(--text-primary);
     line-height: 1.75;
     font-size: 0.95rem;
+    text-align: left;
 }
 
 .about-body h1,

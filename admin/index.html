@@ -466,6 +466,11 @@
             background: var(--danger) !important;
         }
 
+        .btn-save-dirty {
+            background: var(--danger) !important;
+            color: #fff !important;
+        }
+
         .loading {
             color: var(--text-dim);
             font-size: 0.9rem;
@@ -582,7 +587,7 @@
                     <input type="text" id="new-word-text" placeholder="New word…" maxlength="30">
                     <select id="new-word-category"></select>
                     <button class="btn btn-secondary" id="add-word-btn">Add</button>
-                    <button class="btn btn-secondary btn-sm" id="load-static-btn"
+                    <button class="btn btn-danger" id="load-static-btn"
                         title="Reset to the words from the bundled data/words.json">Load defaults</button>
                     <span class="word-count" id="word-count-display"></span>
                 </div>
@@ -680,6 +685,18 @@
         </div>
     </div>
 
+    <!-- Load defaults confirm overlay -->
+    <div class="overlay" id="load-defaults-overlay">
+        <div class="dialog">
+            <h3>Load defaults?</h3>
+            <p>This will replace <strong>all words and categories</strong> with the bundled defaults and save immediately. This cannot be undone.</p>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="load-defaults-cancel">Cancel</button>
+                <button class="btn btn-danger" id="load-defaults-confirm">Replace & save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Set password overlay -->
     <div class="overlay" id="setpw-overlay">
         <div class="dialog">
@@ -702,6 +719,8 @@
         let pendingDeleteId = null;
         let currentUsername = null;
         let pendingSetPwTarget = null;
+        let wordsDirty = false;
+        let catsDirty = false;
 
         // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -720,6 +739,34 @@
             el.className = 'save-feedback ' + (isErr ? 'err' : 'ok');
             clearTimeout(el._t);
             el._t = setTimeout(() => { el.className = 'save-feedback'; }, 3500);
+        }
+
+        function updateSaveBtn(btn, dirty) {
+            btn.classList.toggle('btn-save-dirty', dirty);
+            btn.disabled = !dirty;
+            btn.style.display = dirty ? '' : 'none';
+        }
+
+        function setWordsDirty(val) {
+            wordsDirty = val;
+            const btn = document.getElementById('save-words-btn');
+            if (val && btn._ft) {
+                clearTimeout(btn._ft);
+                btn.textContent = btn.dataset.originalLabel || 'Save word list';
+                btn.classList.remove('btn-flash-ok', 'btn-flash-err');
+            }
+            updateSaveBtn(btn, val);
+        }
+
+        function setCatsDirty(val) {
+            catsDirty = val;
+            const btn = document.getElementById('save-cats-btn');
+            if (val && btn._ft) {
+                clearTimeout(btn._ft);
+                btn.textContent = btn.dataset.originalLabel || 'Save categories';
+                btn.classList.remove('btn-flash-ok', 'btn-flash-err');
+            }
+            updateSaveBtn(btn, val);
         }
 
         function flashBtn(btn, msg, isErr) {
@@ -837,6 +884,10 @@
                 if (currentWords.length === 0) loadWords();
                 renderCatsTable();
             }
+            if (nextTab === 'categories') {
+                renderCatsTable();
+                refreshCategorySelect();
+            }
             if (nextTab === 'settings') loadSettings();
             if (nextTab === 'users') loadUsers();
 
@@ -870,6 +921,8 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('admin-screen').classList.add('visible');
             await Promise.all([loadCategories(), loadScores()]);
+            setWordsDirty(false);
+            setCatsDirty(false);
             activateAdminTab(getStoredAdminTab(), { persist: false });
         }
 
@@ -1063,6 +1116,7 @@
                 const { ok, data } = await apiFetch('/categories');
                 if (ok && data.categories) {
                     window.categories = data.categories;
+                    currentCategories = data.categories;
                     loaded = true;
                 }
             } catch {
@@ -1072,8 +1126,10 @@
                 try {
                     const res = await fetch('/data/categories.json');
                     window.categories = await res.json();
+                    currentCategories = window.categories;
                 } catch {
                     window.categories = {};
+                    currentCategories = {};
                 }
             }
         }
@@ -1111,6 +1167,7 @@
                 input.addEventListener('input', () => {
                     if (currentCategories[input.dataset.key]) {
                         currentCategories[input.dataset.key].label = input.value;
+                        setCatsDirty(true);
                     }
                 });
             });
@@ -1119,6 +1176,7 @@
                 input.addEventListener('input', () => {
                     if (currentCategories[input.dataset.key]) {
                         currentCategories[input.dataset.key].color = input.value;
+                        setCatsDirty(true);
                     }
                 });
             });
@@ -1129,6 +1187,7 @@
                     const inUse = currentWords.filter(w => w.category === key).length;
                     if (inUse > 0 && !confirm(`${inUse} word(s) use the "${key}" category. Delete anyway?`)) return;
                     delete currentCategories[key];
+                    setCatsDirty(true);
                     renderCatsTable();
                     refreshCategorySelect();
                 });
@@ -1147,6 +1206,7 @@
             keyInput.value = '';
             labelInput.value = '';
             colorInput.value = '#cccccc';
+            setCatsDirty(true);
             renderCatsTable();
             refreshCategorySelect();
         });
@@ -1154,6 +1214,7 @@
         document.getElementById('save-cats-btn').addEventListener('click', async () => {
             const btn = document.getElementById('save-cats-btn');
             btn.dataset.originalLabel = btn.dataset.originalLabel || btn.textContent;
+            btn.classList.remove('btn-save-dirty');
             btn.disabled = true;
             btn.textContent = 'Saving…';
             try {
@@ -1161,11 +1222,16 @@
                     method: 'PUT',
                     body: JSON.stringify({ categories: currentCategories })
                 });
-                flashBtn(btn, ok ? `✓ Saved ${data.count} categories` : `✗ ${data.error || 'Save failed'}`, !ok);
+                if (ok) {
+                    setCatsDirty(false);
+                    flashBtn(btn, `✓ Saved ${data.count} categories`, false);
+                } else {
+                    btn.disabled = false;
+                    flashBtn(btn, `✗ ${data.error || 'Save failed'}`, true);
+                }
             } catch (err) {
-                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
-            } finally {
                 btn.disabled = false;
+                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
             }
         });
 
@@ -1176,20 +1242,44 @@
             if (!ok) { wrap.innerHTML = `<p class="loading">Error: ${data.error}</p>`; return; }
             currentWords = data.words || [];
             renderWordsTable();
+            setWordsDirty(false);
         }
 
         async function loadDefaultWords() {
-            const [words, defaultCats] = await Promise.all([
-                fetch('/data/words.json').then(r => r.json()),
-                fetch('/data/categories.json').then(r => r.json())
-            ]);
-            currentWords = words;
-            for (const [key, value] of Object.entries(defaultCats)) {
-                if (!currentCategories[key]) currentCategories[key] = value;
+            const btn = document.getElementById('load-static-btn');
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            try {
+                const [words, defaultCats] = await Promise.all([
+                    fetch('/data/words.json').then(r => r.json()),
+                    fetch('/data/categories.json').then(r => r.json())
+                ]);
+                currentWords = words;
+                currentCategories = defaultCats;
+
+                const [wordsRes, catsRes] = await Promise.all([
+                    apiFetch('/words', { method: 'PUT', body: JSON.stringify({ words: currentWords }) }),
+                    apiFetch('/categories', { method: 'PUT', body: JSON.stringify({ categories: currentCategories }) })
+                ]);
+
+                if (!wordsRes.ok || !catsRes.ok) {
+                    const err = (!wordsRes.ok ? wordsRes.data.error : catsRes.data.error) || 'Save failed';
+                    btn.textContent = `✗ ${err}`;
+                    btn.disabled = false;
+                    return;
+                }
+
+                renderWordsTable();
+                renderCatsTable();
+                refreshCategorySelect();
+                setWordsDirty(false);
+                setCatsDirty(false);
+                btn.textContent = '✓ Defaults loaded';
+                setTimeout(() => { btn.textContent = 'Load defaults'; btn.disabled = false; }, 2000);
+            } catch (err) {
+                btn.textContent = `✗ ${err?.message || 'Failed'}`;
+                btn.disabled = false;
             }
-            renderWordsTable();
-            renderCatsTable();
-            refreshCategorySelect();
         }
 
         function renderWordsTable() {
@@ -1218,6 +1308,7 @@
                 btn.addEventListener('click', () => {
                     const i = parseInt(btn.dataset.del);
                     currentWords.splice(i, 1);
+                    setWordsDirty(true);
                     renderWordsTable();
                 });
             });
@@ -1229,6 +1320,7 @@
             if (!text) return;
             currentWords.push({ text, category });
             document.getElementById('new-word-text').value = '';
+            setWordsDirty(true);
             renderWordsTable();
         });
 
@@ -1236,14 +1328,23 @@
             if (e.key === 'Enter') { e.preventDefault(); document.getElementById('add-word-btn').click(); }
         });
 
-        document.getElementById('load-static-btn').addEventListener('click', async () => {
-            if (!confirm('Replace current list with the bundled defaults?')) return;
+        document.getElementById('load-static-btn').addEventListener('click', () => {
+            document.getElementById('load-defaults-overlay').classList.add('visible');
+        });
+
+        document.getElementById('load-defaults-cancel').addEventListener('click', () => {
+            document.getElementById('load-defaults-overlay').classList.remove('visible');
+        });
+
+        document.getElementById('load-defaults-confirm').addEventListener('click', async () => {
+            document.getElementById('load-defaults-overlay').classList.remove('visible');
             await loadDefaultWords();
         });
 
         document.getElementById('save-words-btn').addEventListener('click', async () => {
             const btn = document.getElementById('save-words-btn');
             btn.dataset.originalLabel = btn.dataset.originalLabel || btn.textContent;
+            btn.classList.remove('btn-save-dirty');
             btn.disabled = true;
             btn.textContent = 'Saving…';
             try {
@@ -1251,11 +1352,16 @@
                     method: 'PUT',
                     body: JSON.stringify({ words: currentWords })
                 });
-                flashBtn(btn, ok ? `✓ Saved ${data.count} words` : `✗ ${data.error || 'Save failed'}`, !ok);
+                if (ok) {
+                    setWordsDirty(false);
+                    flashBtn(btn, `✓ Saved ${data.count} words`, false);
+                } else {
+                    btn.disabled = false;
+                    flashBtn(btn, `✗ ${data.error || 'Save failed'}`, true);
+                }
             } catch (err) {
-                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
-            } finally {
                 btn.disabled = false;
+                flashBtn(btn, `✗ ${err?.message || 'Save failed'}`, true);
             }
         });
 
