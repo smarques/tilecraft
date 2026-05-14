@@ -1,5 +1,7 @@
 # Tilecraft
 
+[![Tilecraft](docs/TilecraftHeader.png)](https://smarques.github.io/tilecraft/)
+
 Tilecraft is a Serious Game for Participatory Brainstorming
 
 [Tilecraft concept & facilitation guide](tilecraft.md)
