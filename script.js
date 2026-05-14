@@ -676,8 +676,18 @@ menuAbout.addEventListener('click', () => {
     openAboutModal();
 });
 
-document.getElementById('help-btn').addEventListener('click', () => {
-    openAboutModal();
+document.getElementById('help-btn').addEventListener('click', async () => {
+    aboutModalBody.innerHTML = '<p style="color:var(--text-secondary)">Loading…</p>';
+    aboutModal.classList.remove('hidden');
+    try {
+        const res = await fetch('/help.md');
+        const content = res.ok ? await res.text() : null;
+        aboutModalBody.innerHTML = content
+            ? (window.marked ? marked.parse(content) : `<pre>${content}</pre>`)
+            : '<p style="color:var(--text-secondary)">Help content not found.</p>';
+    } catch {
+        aboutModalBody.innerHTML = '<p style="color:var(--text-secondary)">Could not load help.</p>';
+    }
 });
 
 document.getElementById('about-modal-close-btn').addEventListener('click', () => {
