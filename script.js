@@ -569,7 +569,6 @@ dialogOkBtn.addEventListener('click', () => {
 // --- Menu Logic ---
 const menuBtn = document.getElementById('menu-btn');
 const menuPanel = document.getElementById('menu-panel');
-const menuPlay = document.getElementById('menu-play');
 const menuHighScore = document.getElementById('menu-highscore');
 const scoresPage = document.getElementById('scores-page');
 const scoresContainer = document.getElementById('scores-container');
@@ -601,11 +600,6 @@ document.addEventListener('click', (e) => {
     if (!menuPanel.contains(e.target) && e.target !== menuBtn) {
         closeMenu();
     }
-});
-
-menuPlay.addEventListener('click', () => {
-    closeMenu();
-    initGame();
 });
 
 menuHighScore.addEventListener('click', async () => {
@@ -787,52 +781,69 @@ async function showSavedBoard(score) {
     }
 }
 
+function injectCeramicTexture(root) {
+    root.querySelectorAll('.tile-inner').forEach(inner => {
+        const pos = inner.style.getPropertyValue('--texture-pos') || '0px 0px';
+        const div = document.createElement('div');
+        div.style.cssText = `position:absolute;inset:0;border-radius:4px;background-image:url('/ceramic.png');background-size:150px 150px;background-position:${pos};mix-blend-mode:multiply;pointer-events:none;z-index:-1;`;
+        inner.appendChild(div);
+    });
+}
+
 async function captureSavedBoard(score) {
     const boardState = typeof score.board_state === 'string'
         ? JSON.parse(score.board_state)
         : score.board_state;
 
-    // Work on a detached clone so the live board and its event listeners are never touched
-    const clone = appContainer.cloneNode(true);
-    clone.style.cssText = 'position:absolute;left:-9999px;top:0;max-width:none;width:max-content;display:block;';
-    document.body.appendChild(clone);
-    void clone.offsetWidth;
+    const cover = document.createElement('div');
+    cover.style.cssText = 'position:fixed;inset:0;z-index:99998;background:#f5f2eb;pointer-events:none;';
+    document.body.appendChild(cover);
 
-    // Hide any open modals and the scores overlay in the clone
-    clone.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
+    const container = document.createElement('div');
+    container.className = 'app-container board-capture-root';
+    container.style.cssText = 'position:fixed;left:0;top:0;z-index:99997;max-width:none;width:max-content;background-color:#f5f2eb;';
 
-    renderBoardFromState(clone.querySelector('#game-board'), boardState);
+    const header = document.createElement('header');
+    const h1 = document.createElement('h1');
+    h1.id = 'player-name-display';
+    h1.textContent = score.player_name;
+    header.appendChild(h1);
+    container.appendChild(header);
 
-    const clonePlayerName = clone.querySelector('#player-name-display');
-    if (clonePlayerName) clonePlayerName.textContent = score.player_name;
+    const main = document.createElement('main');
+    const board = document.createElement('div');
+    renderBoardFromState(board, boardState);
+    main.appendChild(board);
 
-    const cloneComment = clone.querySelector('#saved-comment-display');
-    if (cloneComment) {
-        if (score.statement) {
-            cloneComment.textContent = `"${score.statement}"`;
-            cloneComment.classList.remove('hidden');
-        } else {
-            cloneComment.classList.add('hidden');
-        }
+    if (score.statement) {
+        const comment = document.createElement('div');
+        comment.className = 'saved-comment';
+        comment.textContent = `"${score.statement}"`;
+        main.appendChild(comment);
     }
 
     const gameTitle = t('stats.gameTitle');
-    const cloneFooter = clone.querySelector('#image-footer');
-    if (cloneFooter) {
-        cloneFooter.textContent = t('messages.imageFooter', { gameTitle });
-        cloneFooter.classList.remove('hidden');
-    }
+    const footer = document.createElement('div');
+    footer.className = 'image-footer';
+    footer.textContent = t('messages.imageFooter', { gameTitle });
+    main.appendChild(footer);
+
+    container.appendChild(main);
+    document.body.appendChild(container);
+    void container.offsetWidth;
 
     try {
-        const canvas = await html2canvas(clone, {
+        const canvas = await html2canvas(container, {
             backgroundColor: '#f5f2eb',
             scale: 2,
-            windowWidth: clone.scrollWidth,
-            windowHeight: clone.scrollHeight,
+            windowWidth: container.scrollWidth,
+            windowHeight: container.scrollHeight,
+            onclone: (_, el) => injectCeramicTexture(el),
         });
         return canvas.toDataURL('image/png');
     } finally {
-        document.body.removeChild(clone);
+        document.body.removeChild(container);
+        document.body.removeChild(cover);
     }
 }
 

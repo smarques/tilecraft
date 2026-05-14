@@ -21,7 +21,7 @@ function renderBoardFromState(targetBoard, boardState) {
             inner.textContent = tileData.text;
             inner.style.setProperty('--char-count', Math.max(...tileData.text.split(' ').map(w => w.length)));
             inner.setAttribute('data-category', tileData.category);
-            const bgColor = (window.categories[tileData.category] || {}).color || '#888888';
+            const bgColor = (window.categories[tileData.category] || {}).color || '#f0f0f0';
             inner.style.backgroundColor = bgColor;
             inner.style.color = tileTextColor(bgColor);
             const randX = Math.floor(Math.random() * 1000);

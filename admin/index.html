@@ -1003,7 +1003,7 @@
             // Build the same container structure the game captures for its download
             const container = document.createElement('div');
             container.className = 'app-container board-capture-root';
-            container.style.cssText = 'position:fixed;left:0;top:0;z-index:99997;max-width:none;width:max-content;';
+            container.style.cssText = 'position:fixed;left:0;top:0;z-index:99997;max-width:none;width:max-content;background-color:#f5f2eb;';
 
             const header = document.createElement('header');
             const h1 = document.createElement('h1');
@@ -1038,7 +1038,15 @@
                     backgroundColor: '#f5f2eb',
                     scale: 2,
                     windowWidth: container.scrollWidth,
-                    windowHeight: container.scrollHeight
+                    windowHeight: container.scrollHeight,
+                    onclone: (_, el) => {
+                        el.querySelectorAll('.tile-inner').forEach(inner => {
+                            const pos = inner.style.getPropertyValue('--texture-pos') || '0px 0px';
+                            const div = document.createElement('div');
+                            div.style.cssText = `position:absolute;inset:0;border-radius:4px;background-image:url('/ceramic.png');background-size:150px 150px;background-position:${pos};mix-blend-mode:multiply;pointer-events:none;z-index:-1;`;
+                            inner.appendChild(div);
+                        });
+                    }
                 });
                 return canvas.toDataURL('image/png');
             } finally {
