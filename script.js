@@ -76,6 +76,30 @@ const modeHighlightBtn = document.getElementById('mode-highlight');
 modeMoveBtn.addEventListener('click', () => setMode('move'));
 modeHighlightBtn.addEventListener('click', () => setMode('highlight'));
 
+document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (modeMoveBtn.disabled) return;
+    if (e.key === 'm' || e.key === 'M') setMode('move');
+    else if (e.key === 'h' || e.key === 'H') setMode('highlight');
+    else if (currentMode === 'move' && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        e.preventDefault();
+        const emptyTile = state.find(t => t.id === TOTAL_TILES - 1);
+        const emptyIdx = emptyTile.index;
+        let targetIndex = -1;
+
+        if (e.key === 'ArrowUp') targetIndex = emptyIdx - GRID_SIZE;
+        else if (e.key === 'ArrowDown') targetIndex = emptyIdx + GRID_SIZE;
+        else if (e.key === 'ArrowLeft' && getCol(emptyIdx) > 0) targetIndex = emptyIdx - 1;
+        else if (e.key === 'ArrowRight' && getCol(emptyIdx) < GRID_SIZE - 1) targetIndex = emptyIdx + 1;
+
+        if (targetIndex >= 0 && targetIndex < TOTAL_TILES) {
+            const targetTile = state.find(t => t.index === targetIndex);
+            if (targetTile && targetTile.id !== TOTAL_TILES - 1) handleTileClick(targetTile.id);
+        }
+    }
+});
+
 function setMode(mode) {
     currentMode = mode;
     modeMoveBtn.classList.toggle('active', mode === 'move');
@@ -378,6 +402,12 @@ document.addEventListener('i18n:ready', () => {
     }
     initGame();
     boardElement.style.pointerEvents = 'none';
+    const kbdM = document.createElement('kbd');
+    kbdM.textContent = 'M';
+    modeMoveBtn.appendChild(kbdM);
+    const kbdH = document.createElement('kbd');
+    kbdH.textContent = 'H';
+    modeHighlightBtn.appendChild(kbdH);
 }, { once: true });
 
 // Save Feature Logic

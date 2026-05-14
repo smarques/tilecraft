@@ -77,8 +77,9 @@ The score and move count are displayed in the stats bar at the top of the page.
 
 Move mode is the classic sliding puzzle mechanic.
 
-- Click **Move** in the control bar to enter Move mode.
+- Click **Move** in the control bar (or press **M**) to enter Move mode.
 - Click any tile that is directly adjacent (up, down, left, or right) to the empty space to slide it into that space.
+- Use the **arrow keys** as a shortcut: ↑ moves the tile above the empty space, ↓ the tile below, ← the tile to the left, → the tile to the right.
 - Diagonal moves are not allowed.
 - Each slide counts as **1 move** and plays a sound effect.
 - The puzzle is solved when every tile is back in its original position.
@@ -119,6 +120,14 @@ What happens next:
 - Your game session (name, score, moves, statement, and board layout) is submitted to the leaderboard.
 - A screenshot of the board is captured and downloaded automatically as a PNG file named `{YourName} - Tilecraft.png`.
 - A new game starts after you dismiss the confirmation dialog.
+
+### Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `M` | Switch to Move mode |
+| `H` | Switch to Highlight mode |
+| `↑` `↓` `←` `→` | Slide the tile above / below / left / right of the empty space (Move mode only) |
 
 ### High Scores
 

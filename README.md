@@ -16,6 +16,14 @@ Tilecraft is a Serious Game for Participatory Brainstorming
 
 **Score** = moves + (highlighted tiles × 50)
 
+### Keyboard shortcuts
+
+| Key | Action |
+|-----|--------|
+| `M` | Switch to Move mode |
+| `H` | Switch to Highlight mode |
+| `↑` `↓` `←` `→` | Slide the tile above / below / left / right of the empty space (Move mode only) |
+
 ---
 
 ## Project structure
