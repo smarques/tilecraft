@@ -8,6 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="../config.js"></script>
+    <script src="../board-renderer.js"></script>
     <style>
         *,
         *::before,
@@ -35,10 +39,13 @@
         body {
             font-family: var(--font);
             background: var(--bg);
+            background-image: none;
             color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
         }
 
         /* ── Login ── */
@@ -193,6 +200,9 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            text-align: left;
+            margin-top: 0;
+            margin-bottom: 0;
         }
 
         .admin-header .brand {
@@ -366,6 +376,7 @@
         }
 
         .words-toolbar input[type="text"],
+        .words-toolbar input[type="password"],
         .words-toolbar select {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -378,6 +389,7 @@
         }
 
         .words-toolbar input[type="text"]:focus,
+        .words-toolbar input[type="password"]:focus,
         .words-toolbar select:focus {
             border-color: var(--accent);
         }
@@ -507,6 +519,7 @@
             background: var(--surface);
             cursor: pointer;
         }
+
     </style>
 </head>
 
@@ -518,7 +531,7 @@
             <h1>Tilecraft <span style="color:var(--accent)">Admin</span></h1>
             <p class="subtitle">Sign in to manage your game</p>
             <div id="login-error" class="error-msg"></div>
-            <form id="login-form" autocomplete="on">
+            <form id="login-form" method="post" autocomplete="on">
                 <div class="field">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" autocomplete="username" required>
@@ -881,7 +894,11 @@
             <td>${s.moves}</td>
             <td class="truncate">${esc(s.statement || '')}</td>
             <td>${s.date ? s.date.slice(0, 10) : ''}</td>
-            <td><button class="btn btn-danger btn-sm" data-id="${s.id}" data-name="${esc(s.player_name)}" data-score="${s.score}">Delete</button></td>
+            <td style="display:flex;gap:0.5rem;">
+                ${s.board_state ? `<button class="btn btn-secondary btn-sm" data-view-board='${esc(JSON.stringify(s))}'>View</button>` : ''}
+                ${s.board_state ? `<button class="btn btn-secondary btn-sm" data-download-board='${esc(JSON.stringify(s))}'>Download</button>` : ''}
+                <button class="btn btn-danger btn-sm" data-id="${s.id}" data-name="${esc(s.player_name)}" data-score="${s.score}">Delete</button>
+            </td>
         </tr>`).join('');
 
             el.innerHTML = `
@@ -901,6 +918,27 @@
                     btn.dataset.name,
                     btn.dataset.score
                 ));
+            });
+            el.querySelectorAll('[data-view-board]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const score = JSON.parse(btn.getAttribute('data-view-board'));
+                    showAdminBoardPreview(score);
+                });
+            });
+            el.querySelectorAll('[data-download-board]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const score = JSON.parse(btn.getAttribute('data-download-board'));
+                    btn.disabled = true;
+                    try {
+                        const dataURL = await renderAdminBoardImage(score);
+                        const link = document.createElement('a');
+                        link.download = `${score.player_name}-tilecraft.png`;
+                        link.href = dataURL;
+                        link.click();
+                    } finally {
+                        btn.disabled = false;
+                    }
+                });
             });
         }
 
@@ -928,25 +966,108 @@
             }
         });
 
-        // ── Words ─────────────────────────────────────────────────────────────────────
+        // ── Board Preview Modal (Admin) ───────────────────────────────────────────────
+        async function showAdminBoardPreview(score) {
+            if (!window.categories || Object.keys(window.categories).length === 0) {
+                await loadCategories();
+            }
+
+            const modal = document.getElementById('admin-board-preview-modal');
+            const player = document.getElementById('admin-board-preview-player');
+            const loading = document.getElementById('admin-board-preview-loading');
+            const img = document.getElementById('admin-board-preview-img');
+            player.textContent = `Board for ${score.player_name}`;
+            img.src = '';
+            img.style.display = 'none';
+            loading.style.display = '';
+            modal.classList.add('visible');
+            renderAdminBoardImage(score).then(dataURL => {
+                img.src = dataURL;
+                img.style.display = '';
+                loading.style.display = 'none';
+            }).catch(() => {
+                loading.textContent = 'Failed to load board image.';
+            });
+        }
+
+        async function renderAdminBoardImage(score) {
+            const boardState = typeof score.board_state === 'string'
+                ? JSON.parse(score.board_state)
+                : score.board_state;
+
+            // Opaque cover hides the temporary render container from the user
+            const cover = document.createElement('div');
+            cover.style.cssText = 'position:fixed;inset:0;z-index:99998;background:#f5f2eb;pointer-events:none;';
+            document.body.appendChild(cover);
+
+            // Build the same container structure the game captures for its download
+            const container = document.createElement('div');
+            container.className = 'app-container board-capture-root';
+            container.style.cssText = 'position:fixed;left:0;top:0;z-index:99997;max-width:none;width:max-content;';
+
+            const header = document.createElement('header');
+            const h1 = document.createElement('h1');
+            h1.id = 'player-name-display';
+            h1.textContent = score.player_name;
+            header.appendChild(h1);
+            container.appendChild(header);
+
+            const main = document.createElement('main');
+            const board = document.createElement('div');
+            renderBoardFromState(board, boardState);
+            main.appendChild(board);
+
+            if (score.statement) {
+                const comment = document.createElement('div');
+                comment.className = 'saved-comment';
+                comment.textContent = `"${score.statement}"`;
+                main.appendChild(comment);
+            }
+
+            const footer = document.createElement('div');
+            footer.className = 'image-footer';
+            footer.textContent = 'Tilecraft';
+            main.appendChild(footer);
+
+            container.appendChild(main);
+            document.body.appendChild(container);
+            void container.offsetWidth;
+
+            try {
+                const canvas = await html2canvas(container, {
+                    backgroundColor: '#f5f2eb',
+                    scale: 2,
+                    windowWidth: container.scrollWidth,
+                    windowHeight: container.scrollHeight
+                });
+                return canvas.toDataURL('image/png');
+            } finally {
+                document.body.removeChild(container);
+                document.body.removeChild(cover);
+            }
+        }
 
         let currentCategories = {};
 
         async function loadCategories() {
+            let loaded = false;
             try {
-                // Try D1 first (via admin endpoint), fall back to static file
                 const { ok, data } = await apiFetch('/categories');
                 if (ok && data.categories) {
-                    currentCategories = data.categories;
-                } else {
-                    const res = await fetch('/data/categories.json');
-                    currentCategories = await res.json();
+                    window.categories = data.categories;
+                    loaded = true;
                 }
             } catch {
-                currentCategories = {};
+                // API unavailable — fall through to static JSON
             }
-            refreshCategorySelect();
-            renderCatsTable();
+            if (!loaded) {
+                try {
+                    const res = await fetch('/data/categories.json');
+                    window.categories = await res.json();
+                } catch {
+                    window.categories = {};
+                }
+            }
         }
 
         function refreshCategorySelect() {
@@ -1050,9 +1171,17 @@
         }
 
         async function loadDefaultWords() {
-            const res = await fetch('/data/words.json');
-            currentWords = await res.json();
+            const [words, defaultCats] = await Promise.all([
+                fetch('/data/words.json').then(r => r.json()),
+                fetch('/data/categories.json').then(r => r.json())
+            ]);
+            currentWords = words;
+            for (const [key, value] of Object.entries(defaultCats)) {
+                if (!currentCategories[key]) currentCategories[key] = value;
+            }
             renderWordsTable();
+            renderCatsTable();
+            refreshCategorySelect();
         }
 
         function renderWordsTable() {
@@ -1279,6 +1408,18 @@
             }
         })();
     </script>
+
+    <!-- Board Preview Modal for Admin -->
+    <div class="overlay" id="admin-board-preview-modal">
+        <div class="dialog" style="max-width:600px;width:95%;text-align:center;">
+            <button class="btn btn-secondary btn-sm" style="float:right;margin:-0.5rem -0.5rem 0 0;"
+                onclick="document.getElementById('admin-board-preview-modal').classList.remove('visible')">×</button>
+            <p id="admin-board-preview-player" style="font-weight:700;margin-bottom:0.5rem;"></p>
+            <p id="admin-board-preview-loading">Loading…</p>
+            <img id="admin-board-preview-img"
+                style="max-width:100%;display:none;border-radius:8px;box-shadow:0 2px 12px #0002;" alt="Board preview">
+        </div>
+    </div>
 </body>
 
 </html>

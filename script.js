@@ -3,9 +3,6 @@ function getRandomWords(count) {
     return shuffled.slice(0, count);
 }
 
-const GRID_SIZE = 6;
-const TOTAL_TILES = GRID_SIZE * GRID_SIZE;
-
 let state = []; // Array to store the current board state
 let emptyIndex = TOTAL_TILES - 1; // Index of the empty tile in the state array
 let movesCount = 0;
@@ -99,11 +96,13 @@ function enforceSelectionRules(activeInner = null) {
         
         const toDeselect = selectedTiles.filter(inner => {
             if (inner === activeInner && inner.classList.contains('selected')) return false;
-            
+
             const tileData = state.find(t => t.element === inner.parentElement);
+            if (!tileData) return true;
             const hasAdjacentSelected = selectedTiles.some(otherInner => {
                 if (inner === otherInner) return false;
                 const otherData = state.find(t => t.element === otherInner.parentElement);
+                if (!otherData) return false;
                 return isAdjacent(tileData.index, otherData.index);
             });
             return !hasAdjacentSelected;
@@ -388,6 +387,9 @@ const saveComment = document.getElementById('save-comment');
 const wordCountIndicator = document.getElementById('word-count-indicator');
 const saveCancelBtn = document.getElementById('save-cancel-btn');
 const saveConfirmBtn = document.getElementById('save-confirm-btn');
+const savePreviewImg = document.getElementById('save-preview-img');
+const savePreviewLoading = document.getElementById('save-preview-loading');
+
 
 saveBtn.addEventListener('click', () => {
     const selectedCount = boardElement.querySelectorAll('.tile-inner.selected').length;
@@ -399,14 +401,67 @@ saveBtn.addEventListener('click', () => {
     saveComment.value = '';
     updateWordCount();
     saveComment.focus();
+
+    if (savePreviewImg) {
+        savePreviewImg.src = '';
+        savePreviewImg.style.display = 'none';
+    }
+    if (savePreviewLoading) {
+        savePreviewLoading.textContent = t('highScores.loading');
+        savePreviewLoading.style.display = '';
+    }
+
+    captureSavedBoard({
+        board_state: getBoardState(),
+        player_name: playerNameDisplay.textContent || 'Player',
+        statement: ''
+    }).then(dataURL => {
+        if (!savePreviewImg || !savePreviewLoading) return;
+        savePreviewImg.src = dataURL;
+        savePreviewImg.style.display = '';
+        savePreviewLoading.style.display = 'none';
+    }).catch(() => {
+        if (!savePreviewLoading) return;
+        savePreviewLoading.textContent = t('highScores.loadError');
+    });
+});
+
+saveModal.addEventListener('click', (e) => {
+    if (e.target === saveModal) {
+        saveModal.classList.add('hidden');
+        if (savePreviewImg) {
+            savePreviewImg.src = '';
+            savePreviewImg.style.display = 'none';
+        }
+        if (savePreviewLoading) {
+            savePreviewLoading.textContent = t('highScores.loading');
+            savePreviewLoading.style.display = '';
+        }
+    }
 });
 
 saveCancelBtn.addEventListener('click', () => {
     saveModal.classList.add('hidden');
+    if (savePreviewImg) {
+        savePreviewImg.src = '';
+        savePreviewImg.style.display = 'none';
+    }
+    if (savePreviewLoading) {
+        savePreviewLoading.textContent = t('highScores.loading');
+        savePreviewLoading.style.display = '';
+    }
 });
 
 saveConfirmBtn.addEventListener('click', () => {
     saveModal.classList.add('hidden');
+    if (savePreviewImg) {
+        savePreviewImg.src = '';
+        savePreviewImg.style.display = 'none';
+    }
+    if (savePreviewLoading) {
+        savePreviewLoading.textContent = t('highScores.loading');
+        savePreviewLoading.style.display = '';
+    }
 
     // Save to database in the background — failures are non-blocking
     saveGameData(saveComment.value.trim()).catch(err => console.warn('DB save failed:', err));
@@ -602,6 +657,10 @@ document.getElementById('about-modal-close-btn').addEventListener('click', () =>
     aboutModal.classList.add('hidden');
 });
 
+aboutModal.addEventListener('click', (e) => {
+    if (e.target === aboutModal) aboutModal.classList.add('hidden');
+});
+
 // Fetch and apply settings overrides (tagline) at startup
 fetch('/api/settings')
     .then(r => r.ok ? r.json() : {})
@@ -733,105 +792,47 @@ async function captureSavedBoard(score) {
         ? JSON.parse(score.board_state)
         : score.board_state;
 
-    // Save current DOM state
-    const savedBoardHTML = boardElement.innerHTML;
-    const savedBoardClass = boardElement.className;
-    const savedPlayerName = playerNameDisplay.textContent;
-    const commentDisplay = document.getElementById('saved-comment-display');
-    const savedCommentHidden = commentDisplay.classList.contains('hidden');
-    const savedCommentText = commentDisplay.textContent;
+    // Work on a detached clone so the live board and its event listeners are never touched
+    const clone = appContainer.cloneNode(true);
+    clone.style.cssText = 'position:absolute;left:-9999px;top:0;max-width:none;width:max-content;display:block;';
+    document.body.appendChild(clone);
+    void clone.offsetWidth;
 
-    // Scores page is visible; temporarily swap to app view for capture
-    scoresPage.classList.add('hidden');
-    appContainer.style.display = '';
+    // Hide any open modals and the scores overlay in the clone
+    clone.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
 
-    // Set player name and show the statement + footer (same as save flow)
-    playerNameDisplay.textContent = score.player_name;
+    renderBoardFromState(clone.querySelector('#game-board'), boardState);
 
-    const imageFooter = document.getElementById('image-footer');
-    const gameTitle = t('stats.gameTitle');
-    imageFooter.textContent = t('messages.imageFooter', { gameTitle });
-    imageFooter.classList.remove('hidden');
+    const clonePlayerName = clone.querySelector('#player-name-display');
+    if (clonePlayerName) clonePlayerName.textContent = score.player_name;
 
-    if (score.statement) {
-        commentDisplay.textContent = `"${score.statement}"`;
-        commentDisplay.classList.remove('hidden');
-    } else {
-        commentDisplay.classList.add('hidden');
-    }
-
-    // Render the saved board state
-    boardElement.innerHTML = '';
-    boardElement.className = 'game-board';
-
-    boardState.forEach((tileData, index) => {
-        const tile = document.createElement('div');
-        tile.classList.add('tile');
-
-        const inner = document.createElement('div');
-        inner.classList.add('tile-inner');
-
-        if (tileData) {
-            inner.textContent = tileData.text;
-            inner.style.setProperty('--char-count', Math.max(...tileData.text.split(' ').map(w => w.length)));
-            inner.setAttribute('data-category', tileData.category);
-            inner.style.backgroundColor = (window.categories[tileData.category] || {}).color || '#f0f0f0';
-            const randX = Math.floor(Math.random() * 1000);
-            const randY = Math.floor(Math.random() * 1000);
-            inner.style.backgroundPosition = `0 0, ${randX}px ${randY}px`;
-            if (tileData.selected) inner.classList.add('selected');
+    const cloneComment = clone.querySelector('#saved-comment-display');
+    if (cloneComment) {
+        if (score.statement) {
+            cloneComment.textContent = `"${score.statement}"`;
+            cloneComment.classList.remove('hidden');
         } else {
-            tile.classList.add('empty-tile');
+            cloneComment.classList.add('hidden');
         }
-
-        tile.appendChild(inner);
-        boardElement.appendChild(tile);
-
-        const col = index % GRID_SIZE;
-        const row = Math.floor(index / GRID_SIZE);
-        tile.style.transform = `translate(${col * 100}%, ${row * 100}%)`;
-    });
-
-    if (boardState.some(t => t && t.selected)) {
-        boardElement.classList.add('has-selection');
     }
 
-    // Capture using the same approach as the save flow
-    const origMaxWidth = appContainer.style.maxWidth;
-    const origWidth = appContainer.style.width;
-    appContainer.style.maxWidth = 'none';
-    appContainer.style.width = 'max-content';
-    void appContainer.offsetWidth;
+    const gameTitle = t('stats.gameTitle');
+    const cloneFooter = clone.querySelector('#image-footer');
+    if (cloneFooter) {
+        cloneFooter.textContent = t('messages.imageFooter', { gameTitle });
+        cloneFooter.classList.remove('hidden');
+    }
 
     try {
-        const canvas = await html2canvas(appContainer, {
+        const canvas = await html2canvas(clone, {
             backgroundColor: '#f5f2eb',
             scale: 2,
-            windowWidth: appContainer.scrollWidth,
-            windowHeight: appContainer.scrollHeight
+            windowWidth: clone.scrollWidth,
+            windowHeight: clone.scrollHeight,
         });
         return canvas.toDataURL('image/png');
     } finally {
-        // Restore app container sizing
-        appContainer.style.maxWidth = origMaxWidth;
-        appContainer.style.width = origWidth;
-
-        // Hide the footer added for capture
-        imageFooter.classList.add('hidden');
-
-        // Restore board
-        boardElement.innerHTML = savedBoardHTML;
-        boardElement.className = savedBoardClass;
-
-        // Restore player name and comment
-        playerNameDisplay.textContent = savedPlayerName;
-        commentDisplay.textContent = savedCommentText;
-        if (savedCommentHidden) commentDisplay.classList.add('hidden');
-        else commentDisplay.classList.remove('hidden');
-
-        // Return to scores page
-        appContainer.style.display = 'none';
-        scoresPage.classList.remove('hidden');
+        document.body.removeChild(clone);
     }
 }
 

@@ -84,8 +84,17 @@
         <div class="modal-content">
             <h2 data-i18n="saveModal.title">Save Game</h2>
             <p data-i18n="saveModal.instruction">Please enter a comment to save.</p>
+            <div class="save-preview-wrap" aria-live="polite">
+                <p class="save-preview-title">Highlighted selection preview</p>
+                <div class="board-preview-content save-preview-content">
+                    <p id="save-preview-loading" class="board-preview-loading" data-i18n="highScores.loading">Loading...
+                    </p>
+                    <img id="save-preview-img" class="board-preview-img" alt="">
+                </div>
+            </div>
             <textarea id="save-comment" data-i18n-placeholder="saveModal.placeholder"
-                placeholder="Enter your comment here..." rows="8"></textarea>
+                placeholder="Please add some personal reflection on your choices in this game. This will be included in the image when you download your board."
+                rows="8"></textarea>
             <div id="word-count-indicator">Word count: 0/30</div>
             <div class="modal-actions">
                 <button id="save-cancel-btn" data-i18n="buttons.cancel">Cancel</button>
@@ -151,6 +160,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="config.js"></script>
+    <script src="board-renderer.js"></script>
     <script src="i18n.js"></script>
     <script src="script.js"></script>
 </body>

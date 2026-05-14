@@ -461,6 +461,31 @@ button.active {
     pointer-events: auto;
 }
 
+.save-preview-wrap {
+    margin-top: 1.25rem;
+}
+
+.save-preview-title {
+    margin: 0 0 0.6rem 0;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    font-weight: 700;
+}
+
+.save-preview-content {
+    width: 100%;
+    max-width: min(90vw, 600px);
+    margin: 0 auto;
+}
+
+#save-modal .modal-content {
+    max-width: min(96vw, 720px);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
 .modal-content textarea {
     width: 100%;
     padding: 1rem;
